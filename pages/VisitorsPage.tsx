@@ -33,38 +33,38 @@ const VisitorsPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 pb-24">
         <div className="grid md:grid-cols-3 gap-8">
-          <InfoSection 
-            icon={<MapPin size={40} />} 
-            title="The Venue" 
+          <InfoSection
+            icon={<MapPin size={40} />}
+            title="The Venue"
             items={[
               "National Rugby Center, Amsterdam",
               "Address: Bok de Korverweg 6, 1067 HR",
               "Open from 09:00 AM daily",
               "Cashless venue (Card only)",
               "Multi-pitch facility (6 fields)"
-            ]} 
+            ]}
           />
-          <InfoSection 
-            icon={<Utensils size={40} />} 
-            title="Food & Drink" 
+          <InfoSection
+            icon={<Utensils size={40} />}
+            title="Food & Drink"
             items={[
               "European Street Food Market",
               "Heineken Beer Gardens",
               "Artisanal Coffee & Juices",
               "Vegan & Gluten-free options",
               "Hydration stations across venue"
-            ]} 
+            ]}
           />
-          <InfoSection 
-            icon={<Music size={40} />} 
-            title="Entertainment" 
+          <InfoSection
+            icon={<Music size={40} />}
+            title="Entertainment"
             items={[
               "Main Stage: Top EU DJs",
               "Fan Village: Games & Merch",
               "Player Meet & Greets",
               "Elite Final Showdown (Sun)",
               "Massive After-party Nightly"
-            ]} 
+            ]}
           />
         </div>
 
@@ -73,7 +73,7 @@ const VisitorsPage = () => {
             <div className="md:w-1/2">
               <h2 className="text-4xl font-black italic uppercase mb-6 leading-tight">Getting <span className="text-rugbyRed">Here</span></h2>
               <p className="text-lg font-bold text-gray-600 mb-8">Amsterdam is one of the world's most accessible cities. We encourage green travel methods!</p>
-              
+
               <div className="space-y-6">
                 <div className="flex items-center space-x-4">
                   <div className="bg-deepNavy p-3 text-white"><Train /></div>
@@ -98,8 +98,8 @@ const VisitorsPage = () => {
                 </div>
               </div>
             </div>
-            <div className="md:w-1/2 w-full h-[400px] bg-gray-200 rounded-sm overflow-hidden relative border-8 border-deepNavy">
-              <img src="https://images.unsplash.com/photo-1543269664-76bc3997d9ea?q=80&w=800" className="w-full h-full object-cover grayscale" />
+            <div className="md:w-1/2 w-full h-[400px] bg-gray-200 rounded-sm overflow-hidden relative border-8 border-deepNavy flex items-center justify-center">
+              <img src="https://images.unsplash.com/photo-1543269664-76bc3997d9ea?q=80&w=800" className="w-full h-full object-contain grayscale" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="bg-rugbyRed text-white px-8 py-4 font-black uppercase text-xl animate-bounce">MAP VIEW</div>
               </div>

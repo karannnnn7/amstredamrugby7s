@@ -25,15 +25,15 @@ const PhotosPage = () => {
             <p className="text-xl font-bold text-gray-400">Capturing the intensity, the sweat, and the celebration.</p>
           </div>
           <div className="flex space-x-4">
-             <button className="bg-rugbyRed px-6 py-2 font-black uppercase text-xs skew-x-[-10deg]"><span className="block skew-x-[10deg]">2024 Highlights</span></button>
-             <button className="bg-white/10 px-6 py-2 font-black uppercase text-xs skew-x-[-10deg]"><span className="block skew-x-[10deg]">2023 Archive</span></button>
+            <button className="bg-rugbyRed px-6 py-2 font-black uppercase text-xs skew-x-[-10deg]"><span className="block skew-x-[10deg]">2024 Highlights</span></button>
+            <button className="bg-white/10 px-6 py-2 font-black uppercase text-xs skew-x-[-10deg]"><span className="block skew-x-[10deg]">2023 Archive</span></button>
           </div>
         </div>
 
         <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
           {images.map((img, i) => (
-            <div key={i} className="relative group overflow-hidden bg-black rounded-sm skew-x-[-2deg]">
-              <img src={img} className="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+            <div key={i} className="relative group overflow-hidden bg-black rounded-sm skew-x-[-2deg] flex items-center justify-center min-h-[300px]">
+              <img src={img} className="w-full h-auto max-h-[500px] object-contain grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-rugbyRed/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                 <span className="text-white font-black uppercase italic text-2xl skew-x-[2deg]">VIEW</span>
               </div>

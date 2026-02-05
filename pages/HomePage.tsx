@@ -246,9 +246,9 @@ const HomePage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {news.map((item, i) => (
               <div key={i} className="group bg-white/5 border border-white/10 hover:border-rugbyRed transition-all duration-500 overflow-hidden cursor-pointer">
-                <div className="relative h-64 overflow-hidden">
-                  <img src={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={item.title} />
-                  <div className="absolute top-4 left-4 bg-rugbyRed px-3 py-1 text-[10px] font-black uppercase tracking-widest">{item.category}</div>
+                <div className="relative h-64 overflow-hidden bg-deepNavy flex items-center justify-center">
+                  <img src={item.img} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" alt={item.title} />
+                  <div className="absolute top-4 left-4 bg-rugbyRed px-3 py-1 text-[10px] font-black uppercase tracking-widest z-10">{item.category}</div>
                 </div>
                 <div className="p-8">
                   <div className="text-rugbyRed font-black text-sm mb-2">{item.date}</div>
@@ -278,8 +278,8 @@ const HomePage = () => {
               "/assets/partners/S5.jpg",
               "/assets/partners/S6.jpg",
             ].map((src, i) => (
-              <div key={i} className="aspect-square overflow-hidden group">
-                <img src={src} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" alt="Social post" />
+              <div key={i} className="aspect-square overflow-hidden group bg-black flex items-center justify-center">
+                <img src={src} className="w-full h-full object-contain group-hover:scale-110 transition-all duration-700" alt="Social post" />
               </div>
             ))}
           </div>
