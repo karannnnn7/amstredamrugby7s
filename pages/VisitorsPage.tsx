@@ -1,0 +1,114 @@
+
+import React from 'react';
+import { MapPin, Utensils, Music, Info, Train, ParkingCircle, Bike } from 'lucide-react';
+
+const InfoSection = ({ icon, title, items }: any) => (
+  <div className="bg-white/5 border border-white/10 p-8 rounded-sm hover:border-electricBlue transition-colors group">
+    <div className="text-electricBlue mb-6 group-hover:scale-110 transition-transform origin-left">{icon}</div>
+    <h3 className="text-2xl font-black uppercase italic mb-6 tracking-tight">{title}</h3>
+    <ul className="space-y-4">
+      {items.map((item: string, i: number) => (
+        <li key={i} className="flex items-start space-x-3">
+          <div className="w-1 h-1 bg-rugbyRed mt-2 rounded-full flex-shrink-0" />
+          <span className="text-sm font-bold text-gray-400 uppercase leading-relaxed">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const VisitorsPage = () => {
+  return (
+    <div className="bg-deepNavy min-h-screen">
+      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2000" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-deepNavy via-transparent to-deepNavy" />
+        <div className="relative z-10 text-center">
+          <h1 className="text-7xl md:text-9xl font-black italic uppercase italic tracking-tighter leading-none mb-4">
+            Visit the <span className="text-electricBlue">Fest</span>
+          </h1>
+          <p className="text-xl font-bold uppercase tracking-widest text-white/60">Everything you need to know for May 16-18.</p>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 pb-24">
+        <div className="grid md:grid-cols-3 gap-8">
+          <InfoSection 
+            icon={<MapPin size={40} />} 
+            title="The Venue" 
+            items={[
+              "National Rugby Center, Amsterdam",
+              "Address: Bok de Korverweg 6, 1067 HR",
+              "Open from 09:00 AM daily",
+              "Cashless venue (Card only)",
+              "Multi-pitch facility (6 fields)"
+            ]} 
+          />
+          <InfoSection 
+            icon={<Utensils size={40} />} 
+            title="Food & Drink" 
+            items={[
+              "European Street Food Market",
+              "Heineken Beer Gardens",
+              "Artisanal Coffee & Juices",
+              "Vegan & Gluten-free options",
+              "Hydration stations across venue"
+            ]} 
+          />
+          <InfoSection 
+            icon={<Music size={40} />} 
+            title="Entertainment" 
+            items={[
+              "Main Stage: Top EU DJs",
+              "Fan Village: Games & Merch",
+              "Player Meet & Greets",
+              "Elite Final Showdown (Sun)",
+              "Massive After-party Nightly"
+            ]} 
+          />
+        </div>
+
+        <section className="mt-20 bg-white text-deepNavy p-12 skew-x-[-2deg]">
+          <div className="skew-x-[2deg] flex flex-col md:row items-center gap-12">
+            <div className="md:w-1/2">
+              <h2 className="text-4xl font-black italic uppercase mb-6 leading-tight">Getting <span className="text-rugbyRed">Here</span></h2>
+              <p className="text-lg font-bold text-gray-600 mb-8">Amsterdam is one of the world's most accessible cities. We encourage green travel methods!</p>
+              
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="bg-deepNavy p-3 text-white"><Train /></div>
+                  <div>
+                    <h4 className="font-black uppercase text-sm">Public Transport</h4>
+                    <p className="text-xs font-bold text-gray-400">Tram 13 or Bus 21 from Central Station</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="bg-deepNavy p-3 text-white"><Bike /></div>
+                  <div>
+                    <h4 className="font-black uppercase text-sm">Cycling</h4>
+                    <p className="text-xs font-bold text-gray-400">Large guarded bike parking available</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="bg-deepNavy p-3 text-white"><ParkingCircle /></div>
+                  <div>
+                    <h4 className="font-black uppercase text-sm">Car Parking</h4>
+                    <p className="text-xs font-bold text-gray-400">Pre-book parking pass for Sloterdijk P+R</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="md:w-1/2 w-full h-[400px] bg-gray-200 rounded-sm overflow-hidden relative border-8 border-deepNavy">
+              <img src="https://images.unsplash.com/photo-1543269664-76bc3997d9ea?q=80&w=800" className="w-full h-full object-cover grayscale" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-rugbyRed text-white px-8 py-4 font-black uppercase text-xl animate-bounce">MAP VIEW</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+export default VisitorsPage;
