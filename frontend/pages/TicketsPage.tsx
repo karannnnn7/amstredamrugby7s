@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Ticket, Star, Zap, Users, Check, ShieldCheck, Clock, MapPin, Music, Utensils } from 'lucide-react';
-import Button from '../frontend/components/Button';
+import Button from '../components/Button';
 
 const TicketCard = ({ title, price, features, recommended = false }: any) => (
   <div className={`relative flex flex-col p-10 rounded-sm overflow-hidden transition-all duration-300 ${recommended ? 'bg-rugbyRed scale-105 z-10 shadow-2xl skew-x-[-2deg]' : 'bg-white text-deepNavy skew-x-[-2deg]'}`}>

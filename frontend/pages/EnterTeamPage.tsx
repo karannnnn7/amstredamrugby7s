@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Trophy, ChevronRight, Zap, Target, Medal } from 'lucide-react';
-import Button from '../frontend/components/Button';
+import Button from '../components/Button';
 
 const Step = ({ num, title, desc }: any) => (
   <div className="flex items-start space-x-6 relative pb-12 last:pb-0">

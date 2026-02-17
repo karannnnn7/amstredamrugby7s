@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import Button from '../frontend/components/Button';
+import Button from '../components/Button';
 
 const ContactPage = () => {
   return (

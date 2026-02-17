@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { RefreshCw, Trash2, Leaf, Award, ArrowRight, Zap, Recycle, Beer } from 'lucide-react';
-import Button from '../frontend/components/Button';
+import Button from '../components/Button';
 
 const Step = ({ num, title, desc, icon }: any) => (
   <div className="bg-white/5 border border-white/10 p-10 skew-x-[-4deg] group hover:bg-rugbyRed/20 hover:border-rugbyRed transition-all duration-500">

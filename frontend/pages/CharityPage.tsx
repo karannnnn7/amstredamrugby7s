@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Heart, Globe, Users, Gift } from 'lucide-react';
-import Button from '../frontend/components/Button';
+import Button from '../components/Button';
 
 const CharityPage = () => {
    return (
