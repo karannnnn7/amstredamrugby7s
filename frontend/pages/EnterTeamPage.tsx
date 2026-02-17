@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Trophy, ChevronRight, Zap, Target, Medal } from 'lucide-react';
-import Button from '../components/Button';
+import Button from '../frontend/components/Button';
 
 const Step = ({ num, title, desc }: any) => (
   <div className="flex items-start space-x-6 relative pb-12 last:pb-0">
@@ -21,14 +21,14 @@ const EnterTeamPage = () => {
     <div className="bg-deepNavy min-h-screen pb-24">
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=2000" 
-            className="w-full h-full object-cover grayscale opacity-40" 
-            alt="Rugby pitch" 
+          <img
+            src="https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=2000"
+            className="w-full h-full object-cover grayscale opacity-40"
+            alt="Rugby pitch"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-deepNavy via-deepNavy/80 to-transparent" />
         </div>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-7xl md:text-9xl font-black italic uppercase leading-[0.8] mb-6">
             Enter Your <br /> <span className="text-rugbyRed">Battle-Unit</span>
@@ -54,7 +54,7 @@ const EnterTeamPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="grid sm:grid-cols-2 gap-6">
               {[
                 { icon: <Target />, title: "Elite Standard", desc: "Top tier international 7s format for professional clubs." },

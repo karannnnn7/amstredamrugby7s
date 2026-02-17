@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Trophy, ArrowRight, Play, Users, MapPin, Zap, Award, Star, Globe, TrendingUp, Newspaper, Instagram, ShieldCheck, Flame, Truck } from 'lucide-react';
-import Button from '../components/Button';
+import Button from '../frontend/components/Button';
 import { Link } from 'react-router-dom';
 
 const Countdown = () => {

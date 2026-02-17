@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { RefreshCw, Trash2, Leaf, Award, ArrowRight, Zap, Recycle, Beer } from 'lucide-react';
-import Button from '../components/Button';
+import Button from '../frontend/components/Button';
 
 const Step = ({ num, title, desc, icon }: any) => (
   <div className="bg-white/5 border border-white/10 p-10 skew-x-[-4deg] group hover:bg-rugbyRed/20 hover:border-rugbyRed transition-all duration-500">
@@ -22,14 +22,14 @@ const RecyclePage = () => {
       {/* Hero Section */}
       <section className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-black">
         <div className="absolute inset-0 opacity-40">
-          <img 
-            src="https://images.unsplash.com/photo-1542601906970-1419d000a920?q=80&w=2000" 
-            className="w-full h-full object-cover" 
-            alt="Sustainability" 
+          <img
+            src="https://images.unsplash.com/photo-1542601906970-1419d000a920?q=80&w=2000"
+            className="w-full h-full object-cover"
+            alt="Sustainability"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-deepNavy via-transparent to-black" />
         </div>
-        
+
         <div className="relative z-10 text-center max-w-5xl px-4">
           <div className="flex items-center justify-center space-x-2 text-rugbyRed font-black uppercase tracking-[0.4em] mb-6">
             <RefreshCw size={24} className="animate-spin" style={{ animationDuration: '3s' }} />
@@ -57,29 +57,29 @@ const RecyclePage = () => {
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            <Step 
-              num="01" 
-              icon={<Trash2 size={40} />} 
-              title="Smart Sorting" 
-              desc="AI-powered sorting bins across the venue automatically segregate organics, plastics, and metals." 
+            <Step
+              num="01"
+              icon={<Trash2 size={40} />}
+              title="Smart Sorting"
+              desc="AI-powered sorting bins across the venue automatically segregate organics, plastics, and metals."
             />
-            <Step 
-              num="02" 
-              icon={<Recycle size={40} />} 
-              title="On-Site Bio" 
-              desc="Organic waste is processed into fertilizer for the local Amsterdam parks via our mobile digesters." 
+            <Step
+              num="02"
+              icon={<Recycle size={40} />}
+              title="On-Site Bio"
+              desc="Organic waste is processed into fertilizer for the local Amsterdam parks via our mobile digesters."
             />
-            <Step 
-              num="03" 
-              icon={<Leaf size={40} />} 
-              title="Green Logistics" 
-              desc="Recyclables are transported via zero-emission electric barges through the Amsterdam canals." 
+            <Step
+              num="03"
+              icon={<Leaf size={40} />}
+              title="Green Logistics"
+              desc="Recyclables are transported via zero-emission electric barges through the Amsterdam canals."
             />
-            <Step 
-              num="04" 
-              icon={<RefreshCw size={40} />} 
-              title="Re-Entry" 
-              desc="Plastics are repurposed into tournament seating and equipment for next year's event." 
+            <Step
+              num="04"
+              icon={<RefreshCw size={40} />}
+              title="Re-Entry"
+              desc="Plastics are repurposed into tournament seating and equipment for next year's event."
             />
           </div>
         </div>
@@ -88,7 +88,7 @@ const RecyclePage = () => {
       {/* Fan Engagement: The Reward System */}
       <section className="py-32 bg-deepNavy relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-rugbyRed/10 skew-x-[-15deg] transform translate-x-32" />
-        
+
         <div className="max-w-7xl mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-24 items-center">
           <div>
             <span className="text-electricBlue font-black uppercase tracking-[0.3em] mb-4 block">Play Your Part</span>
@@ -98,7 +98,7 @@ const RecyclePage = () => {
             <p className="text-xl text-gray-400 font-bold mb-12 leading-relaxed italic">
               Our "Green Token" system turns fan action into festival perks. Every cup returned is a step closer to a free round or exclusive merch.
             </p>
-            
+
             <div className="space-y-6 mb-12">
               {[
                 { icon: <Beer />, title: "Statiegeld System", desc: "Return your reusable cup and get €1.50 back instantly or donate it to SNSG." },
@@ -114,16 +114,16 @@ const RecyclePage = () => {
                 </div>
               ))}
             </div>
-            
+
             <Button variant="secondary" className="px-12 py-5">Learn About the App</Button>
           </div>
-          
+
           <div className="relative group">
             <div className="absolute -inset-4 border-2 border-electricBlue transform -rotate-3 transition-transform group-hover:rotate-0" />
-            <img 
-              src="https://images.unsplash.com/photo-1542601906970-1419d000a920?q=80&w=1200" 
-              className="relative z-10 w-full h-[600px] object-cover skew-y-[-2deg] grayscale group-hover:grayscale-0 transition-all duration-1000 shadow-2xl" 
-              alt="Stadium Cleanup" 
+            <img
+              src="https://images.unsplash.com/photo-1542601906970-1419d000a920?q=80&w=1200"
+              className="relative z-10 w-full h-[600px] object-cover skew-y-[-2deg] grayscale group-hover:grayscale-0 transition-all duration-1000 shadow-2xl"
+              alt="Stadium Cleanup"
             />
             <div className="absolute -top-10 -right-10 bg-rugbyRed p-12 skew-x-[10deg] shadow-2xl">
               <div className="skew-x-[-10deg]">
