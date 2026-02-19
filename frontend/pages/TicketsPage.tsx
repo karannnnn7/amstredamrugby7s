@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Ticket, Star, Zap, Users, Check, ShieldCheck, Clock, MapPin, Music, Utensils } from 'lucide-react';
 import Button from '../components/Button';
+import api from '../services/api';
 
 const TicketCard = ({ title, price, features, recommended = false }: any) => (
   <div className={`relative flex flex-col p-10 rounded-sm overflow-hidden transition-all duration-300 ${recommended ? 'bg-rugbyRed scale-105 z-10 shadow-2xl skew-x-[-2deg]' : 'bg-white text-deepNavy skew-x-[-2deg]'}`}>
@@ -35,6 +36,67 @@ const TicketCard = ({ title, price, features, recommended = false }: any) => (
 );
 
 const TicketsPage = () => {
+  const [heroHeading, setHeroHeading] = useState("Claim Your Pass");
+  const [heroSubtext, setHeroSubtext] = useState("The Amsterdam Rugby 7s is more than a game—it's a massive multi-stage festival. Select your level of entry below.");
+
+  const [tickets, setTickets] = useState([
+    {
+      title: "Day Access", price: "35", recommended: false,
+      features: ["Single Day Entry (Fri/Sat/Sun)", "Full Access to 6 Pitches", "Festival Fan Village Entry", "Live DJ Sets & Entertainment", "Digital Match Guide"]
+    },
+    {
+      title: "Weekend Fest", price: "85", recommended: true,
+      features: ["Full 3-Day Event Pass", "Official Tournament T-Shirt", "2 Complimentary Heineken Tokens", "Priority Fast-Track Entry", "Official Poster (A3 Limited)", "Elite Finals Reserved Seating"]
+    },
+    {
+      title: "Lounge VIP", price: "195", recommended: false,
+      features: ["Heated VIP Deck Access", "Open Bar & Premium Buffet", "Meet & Greet with Legends", "Elevated Pitch-Side Views", "VIP Valet Parking Pass", "Commemorative VIP Lanyard"]
+    },
+  ]);
+
+  const [groupHeading, setGroupHeading] = useState("Group & Club Discounts");
+  const [groupDesc, setGroupDesc] = useState("Bringing a squad of 10 or more? Unlock massive savings for your rugby club, corporate group, or large social circle.");
+  const [groupImg, setGroupImg] = useState("https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1200");
+
+  useEffect(() => {
+    // Hero content
+    api.get('/content/page/tickets/hero').then(r => {
+      if (r.data) {
+        const c = r.data;
+        if (c.heading) setHeroHeading(c.heading);
+        if (c.subheading) setHeroSubtext(c.subheading);
+      }
+    }).catch(() => {
+      setHeroHeading('');
+      setHeroSubtext('');
+    });
+
+    // Ticket cards
+    api.get('/tickets').then(r => {
+      if (r.data?.length) {
+        setTickets(r.data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).map((t: any) => ({
+          title: t.title, price: String(t.price), recommended: t.recommended, features: t.features || []
+        })));
+      }
+    }).catch(() => { });
+
+    // Group discount section
+    api.get('/content/page/tickets/group-discount').then(r => {
+      if (r.data) {
+        const c = r.data;
+        if (c.heading) setGroupHeading(c.heading);
+        if (c.body) setGroupDesc(c.body);
+      }
+    }).catch(() => {
+      setGroupHeading('');
+      setGroupDesc('');
+    });
+
+    api.get('/config/tickets_group_image').then(r => {
+      if (r.data?.value) setGroupImg(r.data.value);
+    }).catch(() => { });
+  }, []);
+
   return (
     <div className="bg-deepNavy min-h-screen">
       {/* Header */}
@@ -46,49 +108,24 @@ const TicketsPage = () => {
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">Event Registration 2025</span>
           <h1 className="text-7xl md:text-[10rem] font-black italic uppercase italic tracking-tighter leading-[0.8] mb-12">
-            Claim Your <span className="text-rugbyRed">Pass</span>
+            {heroHeading.includes('\n') ? (
+              heroHeading.split('\n').map((line, i, arr) => (
+                <span key={i} className={`block ${i === arr.length - 1 ? 'text-rugbyRed' : ''}`}>
+                  {line}
+                </span>
+              ))
+            ) : (
+              heroHeading.split(' ').map((word, i, arr) => i === arr.length - 1 ? <span key={i} className="text-rugbyRed">{word}</span> : word + ' ')
+            )}
           </h1>
           <p className="text-2xl text-gray-300 font-bold max-w-3xl mx-auto mb-20 leading-relaxed">
-            The Amsterdam Rugby 7s is more than a game—it's a massive multi-stage festival. Select your level of entry below.
+            {heroSubtext}
           </p>
 
           <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto mb-32">
-            <TicketCard
-              title="Day Access"
-              price="35"
-              features={[
-                "Single Day Entry (Fri/Sat/Sun)",
-                "Full Access to 6 Pitches",
-                "Festival Fan Village Entry",
-                "Live DJ Sets & Entertainment",
-                "Digital Match Guide"
-              ]}
-            />
-            <TicketCard
-              title="Weekend Fest"
-              recommended={true}
-              price="85"
-              features={[
-                "Full 3-Day Event Pass",
-                "Official Tournament T-Shirt",
-                "2 Complimentary Heineken Tokens",
-                "Priority Fast-Track Entry",
-                "Official Poster (A3 Limited)",
-                "Elite Finals Reserved Seating"
-              ]}
-            />
-            <TicketCard
-              title="Lounge VIP"
-              price="195"
-              features={[
-                "Heated VIP Deck Access",
-                "Open Bar & Premium Buffet",
-                "Meet & Greet with Legends",
-                "Elevated Pitch-Side Views",
-                "VIP Valet Parking Pass",
-                "Commemorative VIP Lanyard"
-              ]}
-            />
+            {tickets.map((t, i) => (
+              <TicketCard key={i} title={t.title} price={t.price} features={t.features} recommended={t.recommended} />
+            ))}
           </div>
         </div>
       </section>
@@ -126,8 +163,8 @@ const TicketsPage = () => {
       <section className="py-32 bg-black border-y border-white/10 overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-24 items-center">
           <div>
-            <h2 className="text-5xl font-black italic uppercase leading-tight mb-10 text-white">Group & Club <br /><span className="text-rugbyRed">Discounts</span></h2>
-            <p className="text-xl text-gray-400 font-bold mb-12 leading-relaxed italic">Bringing a squad of 10 or more? Unlock massive savings for your rugby club, corporate group, or large social circle.</p>
+            <h2 className="text-5xl font-black italic uppercase leading-tight mb-10 text-white">{groupHeading.split(' ').slice(0, -1).join(' ')} <br /><span className="text-rugbyRed">{groupHeading.split(' ').slice(-1)[0]}</span></h2>
+            <p className="text-xl text-gray-400 font-bold mb-12 leading-relaxed italic">{groupDesc}</p>
 
             <div className="space-y-8">
               {[
@@ -151,7 +188,7 @@ const TicketsPage = () => {
           </div>
           <div className="relative">
             <div className="absolute -inset-4 border-2 border-rugbyRed transform rotate-3 z-0" />
-            <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1200" className="relative z-10 w-full h-[600px] object-cover skew-y-[-2deg] shadow-2xl" alt="Stadium view" />
+            <img src={groupImg} className="relative z-10 w-full h-[600px] object-cover skew-y-[-2deg] shadow-2xl" alt="Stadium view" />
             <div className="absolute -bottom-10 -left-10 bg-white p-12 hidden md:block skew-x-[-10deg] shadow-2xl">
               <div className="skew-x-[10deg] text-deepNavy">
                 <span className="block text-4xl font-black italic leading-none mb-2">BE THERE.</span>

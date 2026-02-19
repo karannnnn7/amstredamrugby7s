@@ -18,41 +18,41 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
     }
 }
 
-const registerUser = asyncHandler(async (req,res) => {
-    const {userName ,password,role} = req.body
-    if(!userName || !password){
-        throw new ApiError(400,"All fields are required")
+const registerUser = asyncHandler(async (req, res) => {
+    const { userName, password, role } = req.body
+    if (!userName || !password) {
+        throw new ApiError(400, "All fields are required")
     }
-    const existedUser = await User.findOne({userName})
-    if(existedUser){
-        throw new ApiError(404,"User already exists")
+    const existedUser = await User.findOne({ userName })
+    if (existedUser) {
+        throw new ApiError(404, "User already exists")
     }
     const user = await User.create({
-            userName : userName,
-            password: password,
-            role: role || ""
-        })
-    if(!user){
-        throw new ApiError(404,"User not created")
+        userName: userName,
+        password: password,
+        role: role || ""
+    })
+    if (!user) {
+        throw new ApiError(404, "User not created")
     }
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
     res.status(200).json(new ApiResponse(200, createdUser, "user registered successfully"))
 })
-const login = asyncHandler(async (req,res) => {
-    const {userName , password} = req.body
-    if(!userName || !password){
-        throw new ApiError(400,"All fields are required")
+const login = asyncHandler(async (req, res) => {
+    const { userName, password } = req.body
+    if (!userName || !password) {
+        throw new ApiError(400, "All fields are required")
     }
-    const user = await User.findOne({userName}).select("+password")
-    if(!user){
-        throw new ApiError(404,"User not found")
+    const user = await User.findOne({ userName }).select("+password")
+    if (!user) {
+        throw new ApiError(404, "User not found")
     }
     const isPasswordValid = await user.isPassword(password)
-    if(!isPasswordValid){
-        throw new ApiError(401,"Invalid password")
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid password")
     }
-    const {accessToken, refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
-    await user.save({validateBeforeSave: false})
+    const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user._id)
+    await user.save({ validateBeforeSave: false })
     const login = user.toObject()
     delete login.password
     delete login.refreshToken
@@ -62,19 +62,19 @@ const login = asyncHandler(async (req,res) => {
         sameSite: "strict",
         path: "/"
     }
-    res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json(new ApiResponse(200, login, "user logged In done"))
+    res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json(new ApiResponse(200, { ...login, accessToken }, "user logged In done"))
 })
 
-const logout =asyncHandler(async (req,res) => {
+const logout = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate( // update the token
         req.user._id,
         {
 
-            $unset:{
+            $unset: {
                 refreshToken: 1
             }
         },
-        { 
+        {
             new: true
         }
     )
@@ -82,7 +82,7 @@ const logout =asyncHandler(async (req,res) => {
         httpOnly: true,
         secure: true
     }
-    return res.status(200).clearCookie("accessToken",options).clearCookie("refreshToken",options).json(new ApiResponse(200,{},"user logged out"))
+    return res.status(200).clearCookie("accessToken", options).clearCookie("refreshToken", options).json(new ApiResponse(200, {}, "user logged out"))
 })
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
@@ -132,4 +132,4 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, req.user, "user fetched successfully"))
 })
 
-export {login, logout, refreshAccessToken , registerUser , getCurrentUser}
+export { login, logout, refreshAccessToken, registerUser, getCurrentUser }

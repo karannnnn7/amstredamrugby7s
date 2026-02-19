@@ -2,16 +2,37 @@
 import React from 'react';
 import { Heart, Globe, Users, Gift } from 'lucide-react';
 import Button from '../components/Button';
+import api from '../services/api';
 
 const CharityPage = () => {
+   const [heroContent, setHeroContent] = React.useState({ heading: "Support\nSNSG", subheading: "Rugby For All, Forever." });
+
+   React.useEffect(() => {
+      api.get('/content/page/charity/hero').then(r => {
+         if (r.data) {
+            setHeroContent({
+               heading: r.data.heading || "Support\nSNSG",
+               subheading: r.data.subheading || "Rugby For All, Forever."
+            });
+         }
+      }).catch(() => { });
+   }, []);
+
    return (
       <div className="bg-deepNavy min-h-screen pb-24">
          <section className="relative h-[50vh] flex items-center justify-center">
             <div className="absolute inset-0 bg-rugbyRed/20 mix-blend-multiply z-10" />
             <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=2000" className="absolute inset-0 w-full h-full object-cover" />
             <div className="relative z-20 text-center px-4">
-               <h1 className="text-7xl md:text-9xl font-black italic uppercase tracking-tighter italic mb-4">Support <span className="text-rugbyRed">SNSG</span></h1>
-               <p className="text-xl font-black uppercase tracking-widest bg-black/40 inline-block px-4 py-2">Rugby For All, Forever.</p>
+               <h1 className="text-7xl md:text-9xl font-black italic uppercase tracking-tighter italic mb-4">
+                  {heroContent.heading.split('\n').map((line, i, arr) => (
+                     <React.Fragment key={i}>
+                        {i === arr.length - 1 ? <span className="text-rugbyRed">{line}</span> : line}
+                        {i < arr.length - 1 && ' '}
+                     </React.Fragment>
+                  ))}
+               </h1>
+               <p className="text-xl font-black uppercase tracking-widest bg-black/40 inline-block px-4 py-2">{heroContent.subheading}</p>
             </div>
          </section>
 

@@ -3,20 +3,55 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, ArrowRight, Play, Users, MapPin, Zap, Award, Star, Globe, TrendingUp, Newspaper, Instagram, ShieldCheck, Flame, Truck } from 'lucide-react';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 
-const Countdown = () => {
-  const [timeLeft, setTimeLeft] = useState({ days: 42, hours: 14, mins: 32, secs: 11 });
+const Countdown = ({ targetDateStr }: { targetDateStr?: string }) => {
+  const [targetDate, setTargetDate] = useState<Date>(new Date('2025-05-16T09:00:00'));
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => ({
-        ...prev,
-        secs: prev.secs > 0 ? prev.secs - 1 : 59,
-        mins: prev.secs === 0 ? (prev.mins > 0 ? prev.mins - 1 : 59) : prev.mins
-      }));
-    }, 1000);
+    if (targetDateStr) {
+      try {
+        // Extract start date (e.g., "March 13" from "March 13-14")
+        const startDatePart = targetDateStr.split('-')[0].trim();
+        // Append current year if not present (simple heuristic)
+        const currentYear = new Date().getFullYear();
+        let parsedDate = new Date(`${startDatePart}, ${currentYear} 09:00:00`);
+
+        // If invalid, fallback
+        if (isNaN(parsedDate.getTime())) {
+          // Try fetching explicit config as backup
+          api.get('/config/countdown_target').then(r => {
+            if (r.data?.value) setTargetDate(new Date(r.data.value));
+          }).catch(() => { });
+        } else {
+          setTargetDate(parsedDate);
+        }
+      } catch (e) { console.error("Date parse error", e); }
+    } else {
+      // Default fetch if no prop provided (legacy behavior)
+      api.get('/config/countdown_target').then(r => {
+        if (r.data?.value) setTargetDate(new Date(r.data.value));
+      }).catch(() => { });
+    }
+  }, [targetDateStr]);
+
+  useEffect(() => {
+    const calc = () => {
+      const now = new Date().getTime();
+      const diff = targetDate.getTime() - now;
+      if (diff <= 0) return { days: 0, hours: 0, mins: 0, secs: 0 };
+      return {
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        secs: Math.floor((diff % (1000 * 60)) / 1000),
+      };
+    };
+    setTimeLeft(calc());
+    const timer = setInterval(() => setTimeLeft(calc()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [targetDate]);
 
   return (
     <div className="flex space-x-2 md:space-x-4 lg:space-x-8">
@@ -33,15 +68,21 @@ const Countdown = () => {
 };
 
 const HeroCarousel = () => {
-  const heroActionImages = [
+  const [heroActionImages, setHeroActionImages] = useState([
     '/assets/hero-scroll/scrum.jpg',
     '/assets/hero-scroll/dive.jpg',
     '/assets/hero-scroll/team.jpg',
     '/assets/hero-scroll/scrum.jpg',
     '/assets/hero-scroll/dive.jpg',
-  ];
+  ]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    api.get('/images?type=slider').then(r => {
+      if (r.data?.length) setHeroActionImages(r.data.map((i: any) => i.img));
+    }).catch(() => { });
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,10 +93,6 @@ const HeroCarousel = () => {
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-black">
-      {/* This logic is tricky with simple CSS. Let's try a better approach below */}
-      {/* Revised sliding implementation */}
-
-
       <div
         className="flex transition-transform duration-[1000ms] ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -76,21 +113,137 @@ const HeroCarousel = () => {
   );
 };
 
+const iconMap: Record<string, any> = {
+  Users: <Users size={40} className="text-rugbyRed" />,
+  Globe: <Globe size={40} className="text-electricBlue" />,
+  Zap: <Zap size={40} className="text-rugbyRed" />,
+  Trophy: <Trophy size={40} className="text-electricBlue" />,
+  Star: <Star size={40} className="text-rugbyRed" />,
+  Award: <Award size={40} className="text-rugbyRed" />,
+  TrendingUp: <TrendingUp size={40} className="text-rugbyRed" />
+};
+
 const HomePage = () => {
-  const news = [
+  const [news, setNews] = useState([
     { title: "2025 Elite Pools Announced", date: "24 APR", category: "Tournament", img: "/assets/partners/T1.jpg" },
     { title: "New Headliner for Saturday Stage", date: "20 APR", category: "Festival", img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=600" },
     { title: "Early Bird Tickets Sold Out", date: "15 APR", category: "Tickets", img: "/assets/partners/T3.png" },
-  ];
+  ]);
 
-  const partners = [
-    { name: 'NIKE', role: 'Technical Partner', img: '/assets/partners/partner1.png' },
-    { name: 'HEINEKEN', role: 'Official Beverage', img: '/assets/partners/partner2.png' },
-    { name: 'RED BULL', role: 'Energy Partner', img: '/assets/partners/partner3.png' },
-    { name: 'DHL', role: 'Logistics Partner', img: '/assets/partners/partner4.png' },
-    { name: 'GILBERT', role: 'Match Ball Supplier', img: '/assets/partners/partner5.png' },
-    { name: 'VODAFONE', role: 'Connectivity Partner', img: '/assets/partners/partner6.png' },
-  ];
+  const [officialSponsors, setOfficialSponsors] = useState([
+    { name: 'NIKE', subName: 'Technical Partner', img: '/assets/partners/partner1.png' },
+    { name: 'HEINEKEN', subName: 'Official Beverage', img: '/assets/partners/partner2.png' },
+    { name: 'RED BULL', subName: 'Energy Partner', img: '/assets/partners/partner3.png' },
+    { name: 'DHL', subName: 'Logistics Partner', img: '/assets/partners/partner4.png' },
+    { name: 'GILBERT', subName: 'Match Ball Supplier', img: '/assets/partners/partner5.png' },
+    { name: 'VODAFONE', subName: 'Connectivity Partner', img: '/assets/partners/partner6.png' },
+  ]);
+
+  const [subSponsors, setSubSponsors] = useState([
+    { name: 'GATORADE' }, { name: 'MONSTER ENERGY' }, { name: 'CANTERBURY' }, { name: 'EMIRATES' }, { name: 'TICKETMASTER' },
+  ]);
+
+  const [stats, setStats] = useState([
+    { id: 'stat-elite-teams', val: "120", suffix: "+", label: "Elite Teams", icon: "Users" },
+    { id: 'stat-global-fans', val: "40", suffix: "k", label: "Global Fans", icon: "Globe" },
+    { id: 'stat-djs-acts', val: "50", suffix: "+", label: "DJs & Acts", icon: "Zap" },
+    { id: 'stat-prize-pool', val: "25", prefix: "€", suffix: "k", label: "Prize Pool", icon: "Trophy" },
+  ]);
+
+  const [socialImages, setSocialImages] = useState([
+    "/assets/partners/S1.jpg",
+    "/assets/partners/S2.jpg",
+    "/assets/partners/S3.jpg",
+    "/assets/partners/S4.jpg",
+    "/assets/partners/S5.jpg",
+    "/assets/partners/S6.jpg",
+  ]);
+
+  const [festivalImg1, setFestivalImg1] = useState("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800");
+  const [festivalImg2, setFestivalImg2] = useState("/assets/partners/music-stage.jpg");
+  const [festivalDesc, setFestivalDesc] = useState("Step away from the pitch and enter a world of immersive music, artisanal street food, and interactive fan experiences.");
+  const [festivalFeatures, setFestivalFeatures] = useState([
+    { id: 'festival-stages', icon: <Zap className="text-rugbyRed" />, title: "3 Main Stages", text: "From deep house to rock highlights." },
+    { id: 'festival-village', icon: <TrendingUp className="text-rugbyRed" />, title: "Fan Village", text: "Gaming zones and skill challenges." },
+    { id: 'festival-market', icon: <Award className="text-rugbyRed" />, title: "Street Market", text: "25+ Food vendors from the EU." },
+    { id: 'festival-vip', icon: <Star className="text-rugbyRed" />, title: "VIP Lounges", text: "Heated decks and open bars." }
+  ]);
+
+  const [heroContent, setHeroContent] = useState({
+    heading: ["Bolder.", "Faster.", "Wilder."],
+    subheading: "Join 40,000 fans for the adrenaline-fueled intersection of elite international rugby and Europe's biggest pitch-side festival."
+  });
+
+  const [eventDate, setEventDate] = useState("MAY 16-18");
+
+  useEffect(() => {
+    // Hero Content
+    api.get('/content/page/home/hero').then(r => {
+      if (r.data) {
+        const h = r.data.heading || "Bolder.\nFaster.\nWilder.";
+        const lines = h.split('\n').filter((l: string) => l.trim());
+
+        setHeroContent({
+          heading: lines.length > 0 ? lines : ["Bolder.", "Faster.", "Wilder."],
+          subheading: r.data.subheading || heroContent.subheading
+        });
+      }
+    }).catch(() => { });
+
+    // Event Date
+    api.get('/content/page/home/event-date').then(r => {
+      if (r.data?.heading) setEventDate(r.data.heading);
+    }).catch(() => { });
+
+    // News (max 3)
+    api.get('/news').then(r => { if (r.data?.length) setNews(r.data.slice(0, 3)); }).catch(() => { });
+
+    // Official sponsors (with images)
+    api.get('/sponsors?type=official-sponsors').then(r => {
+      if (r.data?.length) setOfficialSponsors(r.data.map((s: any) => ({ name: s.name, subName: s.subName || s.role || '', img: s.img })));
+    }).catch(() => { });
+
+    // Sub sponsors (text only)
+    api.get('/sponsors?type=subSponsors').then(r => {
+      if (r.data?.length) setSubSponsors(r.data.map((s: any) => ({ name: s.name })));
+    }).catch(() => { });
+
+    // Stats
+    api.get('/content/page/home').then(r => {
+      if (r.data) {
+        setStats(prevStats => prevStats.map(s => {
+          const content = r.data.find((c: any) => c.section === s.id);
+          return content ? { ...s, val: content.heading } : s;
+        }));
+      }
+    }).catch(() => { });
+
+    // Social images
+    api.get('/images?type=social').then(r => {
+      if (r.data?.length) setSocialImages(r.data.map((i: any) => i.img));
+    }).catch(() => { });
+
+    // Festival section
+    api.get('/images?type=festival').then(r => {
+      if (r.data?.length >= 1) setFestivalImg1(r.data[0].img);
+      if (r.data?.length >= 2) setFestivalImg2(r.data[1].img);
+    }).catch(() => { });
+
+    // Festival Content
+    api.get('/content/page/home').then(r => {
+      if (r.data) {
+        // Description
+        const desc = r.data.find((c: any) => c.section === 'festival-intro');
+        if (desc?.body) setFestivalDesc(desc.body);
+
+        // Features
+        setFestivalFeatures(prev => prev.map(f => {
+          const content = r.data.find((c: any) => c.section === f.id);
+          return content ? { ...f, title: content.heading || f.title, text: content.subheading || f.text } : f;
+        }));
+      }
+    }).catch(() => { });
+  }, []);
 
   return (
     <div className="bg-deepNavy overflow-hidden">
@@ -106,12 +259,18 @@ const HomePage = () => {
               <span>Amsterdam Rugby 7s 2025</span>
             </div>
             <h1 className="text-6xl sm:text-8xl md:text-[10rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8 transform -rotate-2">
-              Bolder.<br />
-              Faster.<br />
-              <span className="text-rugbyRed">Wilder.</span>
+              {heroContent.heading.map((line: string, i: number) => {
+                const isLast = i === heroContent.heading.length - 1;
+                return (
+                  <React.Fragment key={i}>
+                    {isLast ? <span className="text-rugbyRed">{line}</span> : line}
+                    {!isLast && <br />}
+                  </React.Fragment>
+                );
+              })}
             </h1>
             <p className="text-xl sm:text-2xl font-bold text-gray-100 max-w-2xl mb-12 leading-tight">
-              Join 40,000 fans for the adrenaline-fueled intersection of elite international rugby and Europe's biggest pitch-side festival.
+              {heroContent.subheading}
             </p>
             <div className="flex flex-col sm:flex-row gap-6">
               <Link to="/tickets"><Button variant="primary" className="text-lg px-12">Buy Tickets Now</Button></Link>
@@ -124,15 +283,17 @@ const HomePage = () => {
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-end gap-8">
             <div className="order-2 md:order-1">
               <p className="font-black uppercase text-[10px] md:text-xs tracking-widest text-white/60 mb-3 drop-shadow-md">Countdown to Kickoff</p>
-              <Countdown />
+              <Countdown targetDateStr={eventDate} />
             </div>
             <div className="flex items-center space-x-6 order-1 md:order-2 drop-shadow-lg">
               <div className="flex flex-col items-center md:items-end">
-                <span className="text-3xl md:text-4xl font-black italic text-white">MAY 16-18</span>
+                <span className="text-3xl md:text-3xl lg:text-4xl font-black italic text-white">{eventDate}</span>
                 <span className="text-xs md:text-sm font-black text-rugbyRed uppercase tracking-widest bg-black/40 px-2 py-0.5">Olympic Stadium Precinct, NL</span>
               </div>
               <div className="w-16 h-16 md:w-20 md:h-20 border-4 border-white rounded-full flex items-center justify-center bg-black/20 backdrop-blur-sm hover:bg-white hover:text-deepNavy transition-all cursor-pointer group shadow-2xl">
-                <Play fill="currentColor" size={24} className="ml-1 group-hover:scale-125 transition-transform" />
+                <Link to="/home">
+                  <Play fill="currentColor" size={24} className="ml-1 group-hover:scale-125 transition-transform" />
+                </Link>
               </div>
             </div>
           </div>
@@ -143,15 +304,10 @@ const HomePage = () => {
       <section className="py-32 bg-white text-deepNavy relative z-10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-12 text-center">
-            {[
-              { val: "120+", label: "Elite Teams", icon: <Users size={40} className="text-rugbyRed" /> },
-              { val: "40k", label: "Global Fans", icon: <Globe size={40} className="text-electricBlue" /> },
-              { val: "50+", label: "DJs & Acts", icon: <Zap size={40} className="text-rugbyRed" /> },
-              { val: "€25k", label: "Prize Pool", icon: <Trophy size={40} className="text-electricBlue" /> },
-            ].map((stat, i) => (
+            {stats.map((stat, i) => (
               <div key={i} className="group cursor-default">
-                <div className="mb-6 flex justify-center group-hover:scale-110 transition-transform">{stat.icon}</div>
-                <div className="text-7xl font-black italic tracking-tighter mb-2">{stat.val}</div>
+                <div className="mb-6 flex justify-center group-hover:scale-110 transition-transform">{iconMap[stat.icon] || <Trophy size={40} className="text-electricBlue" />}</div>
+                <div className="text-7xl font-black italic tracking-tighter mb-2">{(stat.prefix || '') + stat.val + (stat.suffix || '')}</div>
                 <div className="text-sm font-black uppercase tracking-widest text-gray-500">{stat.label}</div>
               </div>
             ))}
@@ -175,7 +331,7 @@ const HomePage = () => {
 
           <div className="mask-gradient-to-r from-transparent via-black to-transparent overflow-hidden">
             <div className="flex whitespace-nowrap animate-[marquee_20s_linear_infinite] hover:[animation-play-state:paused] w-max">
-              {[...partners, ...partners].map((partner, i) => (
+              {[...officialSponsors, ...officialSponsors].map((partner, i) => (
                 <div
                   key={i}
                   className="inline-block w-64 mx-4 group relative bg-white/5 border border-white/10 p-8 skew-x-[-10deg] transition-all duration-500 cursor-default aspect-square"
@@ -190,7 +346,7 @@ const HomePage = () => {
                     </div>
                     <h4 className="text-sm font-black uppercase tracking-tighter text-white mb-1 whitespace-normal">{partner.name}</h4>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 transition-opacity whitespace-normal">
-                      {partner.role}
+                      {partner.subName}
                     </p>
                   </div>
                 </div>
@@ -203,16 +359,12 @@ const HomePage = () => {
             <div className="flex whitespace-nowrap animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused]">
               {[...Array(2)].map((_, idx) => (
                 <div key={idx} className="flex items-center space-x-16 px-8">
-                  <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">GATORADE</span>
-                  <div className="w-2 h-2 bg-rugbyRed rotate-45" />
-                  <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">MONSTER ENERGY</span>
-                  <div className="w-2 h-2 bg-rugbyRed rotate-45" />
-                  <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">CANTERBURY</span>
-                  <div className="w-2 h-2 bg-rugbyRed rotate-45" />
-                  <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">EMIRATES</span>
-                  <div className="w-2 h-2 bg-rugbyRed rotate-45" />
-                  <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">TICKETMASTER</span>
-                  <div className="w-2 h-2 bg-rugbyRed rotate-45" />
+                  {subSponsors.map((s, si) => (
+                    <React.Fragment key={si}>
+                      <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">{s.name}</span>
+                      <div className="w-2 h-2 bg-rugbyRed rotate-45" />
+                    </React.Fragment>
+                  ))}
                 </div>
               ))}
             </div>
@@ -270,14 +422,7 @@ const HomePage = () => {
             <p className="text-gray-500 font-bold uppercase tracking-widest">Share your journey with the world</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-            {[
-              "/assets/partners/S1.jpg",
-              "/assets/partners/S2.jpg",
-              "/assets/partners/S3.jpg",
-              "/assets/partners/S4.jpg",
-              "/assets/partners/S5.jpg",
-              "/assets/partners/S6.jpg",
-            ].map((src, i) => (
+            {socialImages.map((src, i) => (
               <div key={i} className="aspect-square overflow-hidden group bg-black flex items-center justify-center">
                 <img src={src} className="w-full h-full object-contain group-hover:scale-110 transition-all duration-700" alt="Social post" />
               </div>
@@ -293,13 +438,13 @@ const HomePage = () => {
           <div className="lg:w-1/2 order-2 lg:order-1">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800" className="w-full h-80 object-cover skew-y-[-2deg] shadow-2xl" alt="Festival action" />
+                <img src={festivalImg1} className="w-full h-80 object-cover skew-y-[-2deg] shadow-2xl" alt="Festival action" />
                 <div className="bg-rugbyRed p-8 shadow-xl">
                   <h4 className="text-4xl font-black italic uppercase leading-none">NO<br />LIMITS</h4>
                 </div>
               </div>
               <div className="space-y-4 pt-16">
-                <img src="/assets/partners/music-stage.jpg" className="w-full h-96 object-cover skew-y-[2deg] shadow-2xl" alt="Music stage" />
+                <img src={festivalImg2} className="w-full h-96 object-cover skew-y-[2deg] shadow-2xl" alt="Music stage" />
               </div>
             </div>
           </div>
@@ -309,14 +454,9 @@ const HomePage = () => {
               The Rugby <span className="text-rugbyRed italic">Festival</span>
             </h2>
             <div className="space-y-8 text-xl text-gray-300 leading-relaxed font-bold">
-              <p>Step away from the pitch and enter a world of immersive music, artisanal street food, and interactive fan experiences.</p>
+              <p>{festivalDesc}</p>
               <div className="grid sm:grid-cols-2 gap-8">
-                {[
-                  { icon: <Zap className="text-rugbyRed" />, title: "3 Main Stages", text: "From deep house to rock highlights." },
-                  { icon: <TrendingUp className="text-rugbyRed" />, title: "Fan Village", text: "Gaming zones and skill challenges." },
-                  { icon: <Award className="text-rugbyRed" />, title: "Street Market", text: "25+ Food vendors from the EU." },
-                  { icon: <Star className="text-rugbyRed" />, title: "VIP Lounges", text: "Heated decks and open bars." }
-                ].map((item, i) => (
+                {festivalFeatures.map((item, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <div className="flex items-center space-x-2 text-rugbyRed font-black uppercase text-sm italic">
                       {item.icon}

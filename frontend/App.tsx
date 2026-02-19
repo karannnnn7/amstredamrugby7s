@@ -4,7 +4,7 @@ import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   Menu, X, Trophy, Ticket, Users, Info, Calendar, Camera,
   Heart, Mail, TreeDeciduous, MapPin, Facebook, Instagram, Twitter,
-  Zap, Star, Flame, Truck, Globe, Award, RefreshCw
+  Zap, Star, Flame, Truck, Globe, Award, RefreshCw, LogIn
 } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import TicketsPage from './pages/TicketsPage';
@@ -17,7 +17,19 @@ import RecyclePage from './pages/RecyclePage';
 import PhotosPage from './pages/PhotosPage';
 import CharityPage from './pages/CharityPage';
 import ContactPage from './pages/ContactPage';
+import LoginPage from './pages/LoginPage';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminImages from './pages/admin/AdminImages';
+import AdminContent from './pages/admin/AdminContent';
+import AdminSponsors from './pages/admin/AdminSponsors';
+import AdminTeams from './pages/admin/AdminTeams';
+import AdminTickets from './pages/admin/AdminTickets';
+import AdminNews from './pages/admin/AdminNews';
+import AdminRules from './pages/admin/AdminRules';
+import AdminConfig from './pages/admin/AdminConfig';
 import BackToTop from './components/BackToTop';
+import { AuthProvider } from './context/auth';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -48,6 +60,7 @@ const Navbar = () => {
         { name: 'Photos', path: '/photos', icon: <Camera size={16} /> },
         { name: 'Charity', path: '/charity', icon: <Heart size={16} /> },
         { name: 'Contact', path: '/contact', icon: <Mail size={16} /> },
+        { name: 'Admin Login', path: '/login', icon: <LogIn size={16} /> },
       ]
     },
   ];
@@ -91,6 +104,7 @@ const Navbar = () => {
                 </Link>
               )
             ))}
+
             <Link to="/tickets" className="bg-rugbyRed hover:bg-red-700 text-white px-6 py-3 font-black uppercase tracking-widest skew-x-[-12deg] transition-all hover:scale-105 active:scale-95">
               <span className="block skew-x-[12deg]">Buy Tickets</span>
             </Link>
@@ -134,6 +148,7 @@ const Navbar = () => {
               </Link>
             )
           ))}
+
           <Link to="/tickets" onClick={() => setIsOpen(false)} className="block w-full text-center bg-rugbyRed p-4 font-black uppercase tracking-widest">
             Buy Tickets
           </Link>
@@ -160,33 +175,7 @@ const Footer = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        <div className="mb-20">
-          <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-            <h3 className="text-xs font-black uppercase tracking-[0.5em] text-gray-500">Official Tournament Partners</h3>
-            <div className="h-px bg-white/10 flex-grow mx-8 hidden md:block"></div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {sponsors.map((sponsor) => (
-              <div
-                key={sponsor.name}
-                className="flex flex-col items-center justify-center p-6 bg-white/5 border border-white/10 skew-x-[-10deg] group transition-all duration-300"
-              >
-                <div className="skew-x-[10deg] flex flex-col items-center gap-3 w-full">
-                  <div className="group-hover:scale-110 transition-transform duration-300 h-20 flex items-center justify-center">
-                    <img
-                      src={sponsor.img}
-                      alt={sponsor.name}
-                      className="max-h-full w-auto object-contain transition-all duration-300"
-                    />
-                  </div>
-                  <span className="text-[10px] font-black tracking-tighter italic transition-opacity">
-                    {sponsor.name}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <div className="mb-20"></div>
 
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1">
@@ -251,14 +240,20 @@ const Footer = () => {
   );
 };
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isLoginRoute = location.pathname === '/login';
+  const showPublicLayout = !isAdminRoute && !isLoginRoute;
+
   return (
-    <HashRouter>
+    <>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col font-sans antialiased">
-        <Navbar />
-        <main className="flex-grow pt-20">
+        {showPublicLayout && <Navbar />}
+        <main className={`flex-grow ${showPublicLayout ? 'pt-20' : ''}`}>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/tickets" element={<TicketsPage />} />
             <Route path="/enter-team" element={<EnterTeamPage />} />
@@ -270,11 +265,35 @@ const App: React.FC = () => {
             <Route path="/photos" element={<PhotosPage />} />
             <Route path="/charity" element={<CharityPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="images" element={<AdminImages />} />
+              <Route path="content" element={<AdminContent />} />
+              <Route path="sponsors" element={<AdminSponsors />} />
+              <Route path="teams" element={<AdminTeams />} />
+              <Route path="tickets" element={<AdminTickets />} />
+              <Route path="news" element={<AdminNews />} />
+              <Route path="rules" element={<AdminRules />} />
+              <Route path="config" element={<AdminConfig />} />
+            </Route>
           </Routes>
         </main>
-        <Footer />
-        <BackToTop />
+        {showPublicLayout && <Footer />}
+        {showPublicLayout && <BackToTop />}
       </div>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <HashRouter>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </HashRouter>
   );
 };

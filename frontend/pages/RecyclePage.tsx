@@ -2,6 +2,7 @@
 import React from 'react';
 import { RefreshCw, Trash2, Leaf, Award, ArrowRight, Zap, Recycle, Beer } from 'lucide-react';
 import Button from '../components/Button';
+import api from '../services/api';
 
 const Step = ({ num, title, desc, icon }: any) => (
   <div className="bg-white/5 border border-white/10 p-10 skew-x-[-4deg] group hover:bg-rugbyRed/20 hover:border-rugbyRed transition-all duration-500">
@@ -17,6 +18,19 @@ const Step = ({ num, title, desc, icon }: any) => (
 );
 
 const RecyclePage = () => {
+  const [heroContent, setHeroContent] = React.useState({ heading: "The\nSystem", subheading: "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030." });
+
+  React.useEffect(() => {
+    api.get('/content/page/recycle/hero').then(r => {
+      if (r.data) {
+        setHeroContent({
+          heading: r.data.heading || "The\nSystem",
+          subheading: r.data.subheading || "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030."
+        });
+      }
+    }).catch(() => { });
+  }, []);
+
   return (
     <div className="bg-deepNavy min-h-screen">
       {/* Hero Section */}
@@ -36,10 +50,15 @@ const RecyclePage = () => {
             <span>Closed Loop Tournament</span>
           </div>
           <h1 className="text-7xl md:text-[10rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8">
-            The <span className="text-rugbyRed">System</span>
+            {heroContent.heading.split('\n').map((line, i, arr) => (
+              <React.Fragment key={i}>
+                {i === arr.length - 1 ? <span className="text-rugbyRed">{line}</span> : line}
+                {i < arr.length - 1 && ' '}
+              </React.Fragment>
+            ))}
           </h1>
           <p className="text-xl md:text-3xl font-bold text-gray-200 italic leading-snug max-w-3xl mx-auto">
-            Redefining "Full-Time" — where the game ends, the cycle begins. 100% Waste Diversion by 2030.
+            {heroContent.subheading}
           </p>
         </div>
       </section>

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { BookOpen, Shield, Clock, FileText } from 'lucide-react';
+import api from '../services/api';
 
 const RuleCard = ({ title, rules }: any) => (
   <div className="bg-white/5 border-l-4 border-rugbyRed p-8 hover:bg-white/10 transition-all">
@@ -17,59 +18,59 @@ const RuleCard = ({ title, rules }: any) => (
 );
 
 const RulesPage = () => {
+  const [heroContent, setHeroContent] = React.useState({ heading: "Tournament\nDirectives", subheading: "Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units." });
+  const [rules, setRules] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    // Fetch hero content
+    api.get('/content/page/rules/hero').then(r => {
+      if (r.data) {
+        setHeroContent({
+          heading: r.data.heading || "Tournament\nDirectives",
+          subheading: r.data.subheading || "Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units."
+        });
+      }
+    }).catch(() => { });
+
+    // Fetch dynamic rules
+    api.get('/rules').then(r => {
+      if (Array.isArray(r.data)) {
+        setRules(r.data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)));
+      }
+    }).catch(err => console.error("Failed to fetch rules:", err));
+  }, []);
+
   return (
     <div className="bg-deepNavy min-h-screen pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-16">
           <span className="text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 block">Fair Play & Competition</span>
           <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-none tracking-tighter mb-8">
-            Tournament <span className="text-white opacity-20">Directives</span>
+            {heroContent.heading.split('\n').map((line, i, arr) => (
+              <React.Fragment key={i}>
+                {i === arr.length - 1 ? <span className="text-white opacity-20">{line}</span> : line}
+                {i < arr.length - 1 && ' '}
+              </React.Fragment>
+            ))}
           </h1>
-          <p className="text-xl font-bold text-gray-400 max-w-2xl">Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units.</p>
+          <p className="text-xl font-bold text-gray-400 max-w-2xl">{heroContent.subheading}</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 grid md:grid-cols-2 gap-8">
-            <RuleCard 
-              title="Match Format" 
-              rules={[
-                "7-a-side matches (10-a-side for Vets)",
-                "7-minute halves with 2-minute break",
-                "Finals: 10-minute halves",
-                "Rolling substitutions (limit 5)",
-                "Golden Point overtime for knockout stages"
-              ]}
-            />
-            <RuleCard 
-              title="Scoring" 
-              rules={[
-                "Try: 5 Points",
-                "Conversion: 2 Points",
-                "Penalty/Drop Goal: 3 Points",
-                "Standard World Rugby Union laws apply",
-                "Quick tap penalties allowed"
-              ]}
-            />
-            <RuleCard 
-              title="Discipline" 
-              rules={[
-                "Yellow Card: 2-minute sin bin",
-                "Red Card: Immediate disqualification",
-                "Referees' decisions are final",
-                "Code of conduct strictly enforced off-field",
-                "Zero tolerance for match official abuse"
-              ]}
-            />
-            <RuleCard 
-              title="Eligibility" 
-              rules={[
-                "Players must be registered on squad list",
-                "Elite: Professional/Semi-pro status",
-                "Vets: Minimum age of 35 by Jan 1st",
-                "Maximum 12 players per squad list",
-                "Cross-squad playing is prohibited"
-              ]}
-            />
+            {rules.length > 0 ? (
+              rules.map((rule) => (
+                <RuleCard
+                  key={rule._id}
+                  title={rule.title}
+                  rules={rule.rules || []}
+                />
+              ))
+            ) : (
+              // Fallback/Loading state or keep hardcoded as initial state if preferred, 
+              // but user wants dynamic. Let's just show a message if empty or nothing.
+              <p className="col-span-2 text-gray-500 font-bold italic">Loading rules...</p>
+            )}
           </div>
 
           <div className="space-y-8">

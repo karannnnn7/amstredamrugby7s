@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Utensils, Music, Info, Train, ParkingCircle, Bike } from 'lucide-react';
+import api from '../services/api';
 
 const InfoSection = ({ icon, title, items }: any) => (
   <div className="bg-white/5 border border-white/10 p-8 rounded-sm hover:border-electricBlue transition-colors group">
@@ -18,6 +19,24 @@ const InfoSection = ({ icon, title, items }: any) => (
 );
 
 const VisitorsPage = () => {
+  const [mapsLink, setMapsLink] = useState('');
+  const [heroContent, setHeroContent] = useState({ heading: "Visit the\nFest", subheading: "Everything you need to know for May 16-18." });
+
+  useEffect(() => {
+    api.get('/config/google_maps_link').then(r => {
+      if (r.data?.value) setMapsLink(r.data.value);
+    }).catch(() => { });
+
+    api.get('/content/page/visitors/hero').then(r => {
+      if (r.data) {
+        setHeroContent({
+          heading: r.data.heading || "Visit the\nFest",
+          subheading: r.data.subheading || "Everything you need to know for May 16-18."
+        });
+      }
+    }).catch(() => { });
+  }, []);
+
   return (
     <div className="bg-deepNavy min-h-screen">
       <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
@@ -25,9 +44,14 @@ const VisitorsPage = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-deepNavy via-transparent to-deepNavy" />
         <div className="relative z-10 text-center">
           <h1 className="text-7xl md:text-9xl font-black italic uppercase italic tracking-tighter leading-none mb-4">
-            Visit the <span className="text-electricBlue">Fest</span>
+            {heroContent.heading.split('\n').map((line, i, arr) => (
+              <React.Fragment key={i}>
+                {i === arr.length - 1 ? <span className="text-electricBlue">{line}</span> : line}
+                {i < arr.length - 1 && ' '}
+              </React.Fragment>
+            ))}
           </h1>
-          <p className="text-xl font-bold uppercase tracking-widest text-white/60">Everything you need to know for May 16-18.</p>
+          <p className="text-xl font-bold uppercase tracking-widest text-white/60">{heroContent.subheading}</p>
         </div>
       </section>
 
@@ -101,7 +125,13 @@ const VisitorsPage = () => {
             <div className="md:w-1/2 w-full h-[400px] bg-gray-200 rounded-sm overflow-hidden relative border-8 border-deepNavy flex items-center justify-center">
               <img src="https://images.unsplash.com/photo-1543269664-76bc3997d9ea?q=80&w=800" className="w-full h-full object-contain grayscale" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-rugbyRed text-white px-8 py-4 font-black uppercase text-xl animate-bounce">MAP VIEW</div>
+                {mapsLink ? (
+                  <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="bg-rugbyRed text-white px-8 py-4 font-black uppercase text-xl animate-bounce hover:bg-red-700 transition-colors">
+                    MAP VIEW
+                  </a>
+                ) : (
+                  <div className="bg-rugbyRed text-white px-8 py-4 font-black uppercase text-xl animate-bounce">MAP VIEW</div>
+                )}
               </div>
             </div>
           </div>
