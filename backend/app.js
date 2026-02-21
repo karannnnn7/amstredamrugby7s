@@ -49,4 +49,4 @@ app.use('/api/v1/config', siteConfigRouter)
 
 app.use(errorHandler)
 
-export { app }
+export default app 
