@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   Menu, X, Trophy, Ticket, Users, Info, Calendar, Camera,
   Heart, Mail, TreeDeciduous, MapPin, Facebook, Instagram, Twitter,
-  Zap, Star, Flame, Truck, Globe, Award, RefreshCw, LogIn
+  RefreshCw, LogIn
 } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import TicketsPage from './pages/TicketsPage';
@@ -17,19 +18,11 @@ import RecyclePage from './pages/RecyclePage';
 import PhotosPage from './pages/PhotosPage';
 import CharityPage from './pages/CharityPage';
 import ContactPage from './pages/ContactPage';
-import LoginPage from './pages/LoginPage';
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminImages from './pages/admin/AdminImages';
-import AdminContent from './pages/admin/AdminContent';
-import AdminSponsors from './pages/admin/AdminSponsors';
-import AdminTeams from './pages/admin/AdminTeams';
-import AdminTickets from './pages/admin/AdminTickets';
-import AdminNews from './pages/admin/AdminNews';
-import AdminRules from './pages/admin/AdminRules';
-import AdminConfig from './pages/admin/AdminConfig';
+
 import BackToTop from './components/BackToTop';
 import { AuthProvider } from './context/auth';
+
+
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -60,7 +53,7 @@ const Navbar = () => {
         { name: 'Photos', path: '/photos', icon: <Camera size={16} /> },
         { name: 'Charity', path: '/charity', icon: <Heart size={16} /> },
         { name: 'Contact', path: '/contact', icon: <Mail size={16} /> },
-        { name: 'Admin Login', path: '/login', icon: <LogIn size={16} /> },
+
       ]
     },
   ];
@@ -70,7 +63,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-28">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/assets/logo.png" alt="Amsterdam Rugby 7s Logo" className="h-20 w-auto object-contain skew-x-[-12deg]" />
+            <img src="/assets/logo.webp" alt="Amsterdam Rugby 7s Logo" className="h-20 w-auto object-contain skew-x-[-12deg]" />
           </Link>
 
           {/* Desktop Menu */}
@@ -160,12 +153,12 @@ const Navbar = () => {
 
 const Footer = () => {
   const sponsors = [
-    { name: 'NIKE', img: '/assets/partners/partner1.png' },
-    { name: 'HEINEKEN', img: '/assets/partners/partner2.png' },
-    { name: 'RED BULL', img: '/assets/partners/partner3.png' },
-    { name: 'DHL', img: '/assets/partners/partner4.png' },
-    { name: 'GILBERT', img: '/assets/partners/partner5.png' },
-    { name: 'VODAFONE', img: '/assets/partners/partner6.png' },
+    { name: 'NIKE', img: '/assets/partners/partner1.webp' },
+    { name: 'HEINEKEN', img: '/assets/partners/partner2.webp' },
+    { name: 'RED BULL', img: '/assets/partners/partner3.webp' },
+    { name: 'DHL', img: '/assets/partners/partner4.webp' },
+    { name: 'GILBERT', img: '/assets/partners/partner5.webp' },
+    { name: 'VODAFONE', img: '/assets/partners/partner6.webp' },
   ];
 
   return (
@@ -180,7 +173,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/assets/logo.png" alt="Amsterdam Rugby 7s Logo" className="h-30 w-auto object-contain skew-x-[-12deg]" />
+              <img src="/assets/logo.webp" alt="Amsterdam Rugby 7s Logo" className="h-30 w-auto object-contain skew-x-[-12deg]" />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               The premier European rugby 7s festival. Join us in Amsterdam for 3 days of elite rugby and world-class entertainment.
@@ -242,9 +235,9 @@ const Footer = () => {
 
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
-  const isLoginRoute = location.pathname === '/login';
-  const showPublicLayout = !isAdminRoute && !isLoginRoute;
+  /* const isAdminRoute = location.pathname.startsWith('/admin'); */
+  /* const isLoginRoute = location.pathname === '/login'; */
+  const showPublicLayout = true;
 
   return (
     <>
@@ -265,20 +258,7 @@ const AppContent: React.FC = () => {
             <Route path="/photos" element={<PhotosPage />} />
             <Route path="/charity" element={<CharityPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/login" element={<LoginPage />} />
-
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="images" element={<AdminImages />} />
-              <Route path="content" element={<AdminContent />} />
-              <Route path="sponsors" element={<AdminSponsors />} />
-              <Route path="teams" element={<AdminTeams />} />
-              <Route path="tickets" element={<AdminTickets />} />
-              <Route path="news" element={<AdminNews />} />
-              <Route path="rules" element={<AdminRules />} />
-              <Route path="config" element={<AdminConfig />} />
-            </Route>
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </main>
         {showPublicLayout && <Footer />}
@@ -292,6 +272,7 @@ const App: React.FC = () => {
   return (
     <HashRouter>
       <AuthProvider>
+        <Toaster position="top-right" />
         <AppContent />
       </AuthProvider>
     </HashRouter>

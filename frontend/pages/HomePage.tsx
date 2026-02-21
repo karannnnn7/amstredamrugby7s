@@ -5,6 +5,8 @@ import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 
+import { Image, NewsItem, Sponsor } from '../types';
+
 const Countdown = ({ targetDateStr }: { targetDateStr?: string }) => {
   const [targetDate, setTargetDate] = useState<Date>(new Date('2025-05-16T09:00:00'));
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
@@ -69,18 +71,18 @@ const Countdown = ({ targetDateStr }: { targetDateStr?: string }) => {
 
 const HeroCarousel = () => {
   const [heroActionImages, setHeroActionImages] = useState([
-    '/assets/hero-scroll/scrum.jpg',
-    '/assets/hero-scroll/dive.jpg',
-    '/assets/hero-scroll/team.jpg',
-    '/assets/hero-scroll/scrum.jpg',
-    '/assets/hero-scroll/dive.jpg',
+    '/assets/hero-scroll/scrum.webp',
+    '/assets/hero-scroll/dive.webp',
+    '/assets/hero-scroll/team.webp',
+    '/assets/hero-scroll/scrum.webp',
+    '/assets/hero-scroll/dive.webp',
   ]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     api.get('/images?type=slider').then(r => {
-      if (r.data?.length) setHeroActionImages(r.data.map((i: any) => i.img));
+      if (r.data?.length) setHeroActionImages(r.data.map((i: Image) => i.img));
     }).catch(() => { });
   }, []);
 
@@ -113,7 +115,7 @@ const HeroCarousel = () => {
   );
 };
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ReactNode> = {
   Users: <Users size={40} className="text-rugbyRed" />,
   Globe: <Globe size={40} className="text-electricBlue" />,
   Zap: <Zap size={40} className="text-rugbyRed" />,
@@ -124,23 +126,23 @@ const iconMap: Record<string, any> = {
 };
 
 const HomePage = () => {
-  const [news, setNews] = useState([
-    { title: "2025 Elite Pools Announced", date: "24 APR", category: "Tournament", img: "/assets/partners/T1.jpg" },
-    { title: "New Headliner for Saturday Stage", date: "20 APR", category: "Festival", img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=600" },
-    { title: "Early Bird Tickets Sold Out", date: "15 APR", category: "Tickets", img: "/assets/partners/T3.png" },
+  const [news, setNews] = useState<NewsItem[]>([
+    { _id: '1', title: "2025 Elite Pools Announced", date: "24 APR", category: "Tournament", excerpt: "", img: "/assets/partners/T1.webp" },
+    { _id: '2', title: "New Headliner for Saturday Stage", date: "20 APR", category: "Festival", excerpt: "", img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=600" },
+    { _id: '3', title: "Early Bird Tickets Sold Out", date: "15 APR", category: "Tickets", excerpt: "", img: "/assets/partners/T3.webp" },
   ]);
 
-  const [officialSponsors, setOfficialSponsors] = useState([
-    { name: 'NIKE', subName: 'Technical Partner', img: '/assets/partners/partner1.png' },
-    { name: 'HEINEKEN', subName: 'Official Beverage', img: '/assets/partners/partner2.png' },
-    { name: 'RED BULL', subName: 'Energy Partner', img: '/assets/partners/partner3.png' },
-    { name: 'DHL', subName: 'Logistics Partner', img: '/assets/partners/partner4.png' },
-    { name: 'GILBERT', subName: 'Match Ball Supplier', img: '/assets/partners/partner5.png' },
-    { name: 'VODAFONE', subName: 'Connectivity Partner', img: '/assets/partners/partner6.png' },
+  const [officialSponsors, setOfficialSponsors] = useState<Sponsor[]>([
+    { _id: '1', type: 'official-sponsors', name: 'NIKE', subName: 'Technical Partner', img: '/assets/partners/partner1.webp' },
+    { _id: '2', type: 'official-sponsors', name: 'HEINEKEN', subName: 'Official Beverage', img: '/assets/partners/partner2.webp' },
+    { _id: '3', type: 'official-sponsors', name: 'RED BULL', subName: 'Energy Partner', img: '/assets/partners/partner3.webp' },
+    { _id: '4', type: 'official-sponsors', name: 'DHL', subName: 'Logistics Partner', img: '/assets/partners/partner4.webp' },
+    { _id: '5', type: 'official-sponsors', name: 'GILBERT', subName: 'Match Ball Supplier', img: '/assets/partners/partner5.webp' },
+    { _id: '6', type: 'official-sponsors', name: 'VODAFONE', subName: 'Connectivity Partner', img: '/assets/partners/partner6.webp' },
   ]);
 
-  const [subSponsors, setSubSponsors] = useState([
-    { name: 'GATORADE' }, { name: 'MONSTER ENERGY' }, { name: 'CANTERBURY' }, { name: 'EMIRATES' }, { name: 'TICKETMASTER' },
+  const [subSponsors, setSubSponsors] = useState<Sponsor[]>([
+    { _id: 's1', type: 'sub-sponsors', name: 'GATORADE' }, { _id: 's2', type: 'sub-sponsors', name: 'MONSTER ENERGY' }, { _id: 's3', type: 'sub-sponsors', name: 'CANTERBURY' }, { _id: 's4', type: 'sub-sponsors', name: 'EMIRATES' }, { _id: 's5', type: 'sub-sponsors', name: 'TICKETMASTER' },
   ]);
 
   const [stats, setStats] = useState([
@@ -151,16 +153,16 @@ const HomePage = () => {
   ]);
 
   const [socialImages, setSocialImages] = useState([
-    "/assets/partners/S1.jpg",
-    "/assets/partners/S2.jpg",
-    "/assets/partners/S3.jpg",
-    "/assets/partners/S4.jpg",
-    "/assets/partners/S5.jpg",
-    "/assets/partners/S6.jpg",
+    "/assets/partners/S1.webp",
+    "/assets/partners/S2.webp",
+    "/assets/partners/S3.webp",
+    "/assets/partners/S4.webp",
+    "/assets/partners/S5.webp",
+    "/assets/partners/S6.webp",
   ]);
 
   const [festivalImg1, setFestivalImg1] = useState("https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800");
-  const [festivalImg2, setFestivalImg2] = useState("/assets/partners/music-stage.jpg");
+  const [festivalImg2, setFestivalImg2] = useState("/assets/partners/music-stage.webp");
   const [festivalDesc, setFestivalDesc] = useState("Step away from the pitch and enter a world of immersive music, artisanal street food, and interactive fan experiences.");
   const [festivalFeatures, setFestivalFeatures] = useState([
     { id: 'festival-stages', icon: <Zap className="text-rugbyRed" />, title: "3 Main Stages", text: "From deep house to rock highlights." },
@@ -200,12 +202,12 @@ const HomePage = () => {
 
     // Official sponsors (with images)
     api.get('/sponsors?type=official-sponsors').then(r => {
-      if (r.data?.length) setOfficialSponsors(r.data.map((s: any) => ({ name: s.name, subName: s.subName || s.role || '', img: s.img })));
+      if (r.data?.length) setOfficialSponsors(r.data.map((s: Sponsor) => ({ ...s, subName: s.subName || s.role || '' })));
     }).catch(() => { });
 
     // Sub sponsors (text only)
     api.get('/sponsors?type=subSponsors').then(r => {
-      if (r.data?.length) setSubSponsors(r.data.map((s: any) => ({ name: s.name })));
+      if (r.data?.length) setSubSponsors(r.data);
     }).catch(() => { });
 
     // Stats
@@ -220,7 +222,7 @@ const HomePage = () => {
 
     // Social images
     api.get('/images?type=social').then(r => {
-      if (r.data?.length) setSocialImages(r.data.map((i: any) => i.img));
+      if (r.data?.length) setSocialImages(r.data.map((i: Image) => i.img));
     }).catch(() => { });
 
     // Festival section

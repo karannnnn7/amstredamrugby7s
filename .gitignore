@@ -9,3 +9,7 @@ backend/.env
 # frontend
 frontend/node_modules/
 frontend/.env
+
+# frontend-admin
+frontend-admin/node_modules/
+frontend-admin/.env

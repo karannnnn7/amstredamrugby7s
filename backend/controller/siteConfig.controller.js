@@ -35,7 +35,7 @@ const upsertConfig = asyncHandler(async (req, res) => {
     const config = await SiteConfig.findOneAndUpdate(
         { key },
         { key, value, description },
-        { upsert: true, new: true, runValidators: true }
+        { upsert: true, returnDocument: 'after', runValidators: true }
     );
     res.status(200).json(new ApiResponse(200, config, "Config saved successfully"));
 });
@@ -54,7 +54,7 @@ const bulkUpsertConfig = asyncHandler(async (req, res) => {
         const config = await SiteConfig.findOneAndUpdate(
             { key },
             { key, value, description },
-            { upsert: true, new: true, runValidators: true }
+            { upsert: true, returnDocument: 'after', runValidators: true }
         );
         results.push(config);
     }
