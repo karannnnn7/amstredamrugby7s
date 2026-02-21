@@ -2,7 +2,7 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
 
 function getToken(): string | null {
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
 }
 
 async function request(endpoint: string, options: RequestInit = {}) {
