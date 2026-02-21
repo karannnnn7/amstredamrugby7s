@@ -1,22 +1,23 @@
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, X, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Save, X, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { SiteConfig } from '../../types';
 
 const AdminConfig = () => {
-    // ... logic ...
     const [configs, setConfigs] = useState<SiteConfig[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState({ key: '', value: '' });
     const [loading, setLoading] = useState(false);
 
+    // editingKey = which row is currently being edited
+    const [editingKey, setEditingKey] = useState<string | null>(null);
+    const [editValue, setEditValue] = useState('');
+
     const fetchConfig = () => {
-        // Config returns flat key-value, convert to array for display
         api.get('/config').then(r => {
             if (r.data) {
-                // Filter out system managed keys that shouldn't be edited here
                 const hiddenKeys = ['photo_categories'];
                 const entries = Object.entries(r.data)
                     .filter(([key]) => !hiddenKeys.includes(key))
@@ -36,35 +37,43 @@ const AdminConfig = () => {
             setForm({ key: '', value: '' });
             setShowForm(false);
             toast.success('Config saved');
-        } catch (err: any) { toast.error(err.message); } setLoading(false);
+        } catch (err: any) { toast.error(err.message); }
+        setLoading(false);
     };
 
     const handleDelete = async (key: string) => {
         if (!confirm(`Delete config "${key}"?`)) return;
-        // Need to find the config id - use the key to delete
         try {
-            // Config delete uses the ID, so we need to get it first
             await api.del(`/config/${key}`);
             fetchConfig();
             toast.success('Config deleted');
         } catch (err: any) { toast.error(err.message); }
     };
 
-    const handleInlineEdit = async (key: string, newValue: string) => {
-        try {
-            await api.post('/config', { key, value: newValue });
-            fetchConfig();
-            toast.success('Config updated');
-        } catch (err: any) { toast.error(err.message); }
+    const startEdit = (cfg: SiteConfig) => {
+        setEditingKey(cfg.key);
+        setEditValue(typeof cfg.value === 'string' ? cfg.value : JSON.stringify(cfg.value, null, 2));
     };
 
-    const safeIso = (val: any) => {
+    const cancelEdit = () => {
+        setEditingKey(null);
+        setEditValue('');
+    };
+
+    const saveEdit = async (key: string) => {
+        const isJson = editValue.trim().startsWith('[') || editValue.trim().startsWith('{');
+        if (isJson) {
+            try { JSON.parse(editValue); } catch {
+                toast.error('Invalid JSON format');
+                return;
+            }
+        }
         try {
-            if (!val) return '';
-            const d = new Date(val);
-            if (isNaN(d.getTime())) return '';
-            return d.toISOString().slice(0, 16);
-        } catch { return ''; }
+            await api.post('/config', { key, value: editValue });
+            fetchConfig();
+            toast.success('Config updated');
+            cancelEdit();
+        } catch (err: any) { toast.error(err.message); }
     };
 
     return (
@@ -96,52 +105,88 @@ const AdminConfig = () => {
             )}
 
             <div className="space-y-2">
-                {configs.map((cfg) => (
-                    <div key={cfg.key} className="bg-gray-800 border border-white/5 p-4 flex items-center justify-between hover:border-white/10 group">
-                        <div className="flex items-center space-x-6 flex-1">
-                            <span className="text-xs font-black uppercase tracking-widest text-rugbyRed min-w-[160px]">{cfg.key}</span>
-                            {['enter_team_deadlines', 'enter_team_fees', 'photo_categories'].includes(cfg.key) || (typeof cfg.value === 'string' && (cfg.value.startsWith('[') || cfg.value.startsWith('{'))) ? (
-                                <textarea
-                                    className="bg-transparent text-gray-300 font-bold outline-none flex-1 border-b border-white/10 focus:border-white/20 min-h-[4rem] text-xs font-mono"
-                                    defaultValue={typeof cfg.value === 'string' ? cfg.value : JSON.stringify(cfg.value, null, 2)}
-                                    onBlur={(e) => {
-                                        const val = e.target.value;
-                                        if (val !== cfg.value) {
-                                            // Validate JSON before saving
-                                            try {
-                                                JSON.parse(val);
-                                                handleInlineEdit(cfg.key, val);
-                                            } catch (err) {
-                                                toast.error('Invalid JSON format');
-                                            }
-                                        }
-                                    }}
-                                />
-                            ) : (
-                                <input
-                                    className="bg-transparent text-gray-300 font-bold outline-none flex-1 border-b border-transparent focus:border-white/20"
-                                    defaultValue={cfg.value as string}
-                                    onBlur={(e) => {
-                                        if (e.target.value !== cfg.value) {
-                                            handleInlineEdit(cfg.key, e.target.value);
-                                        }
-                                    }}
-                                />
-                            )}
+                {configs.map((cfg) => {
+                    const isEditing = editingKey === cfg.key;
+                    const isJson = typeof cfg.value === 'string' && (cfg.value.startsWith('[') || cfg.value.startsWith('{'));
+
+                    return (
+                        <div key={cfg.key} className="bg-gray-800 border border-white/5 p-4 hover:border-white/10 group">
+                            <div className="flex items-start justify-between gap-4">
+                                {/* Key label */}
+                                <span className="text-xs font-black uppercase tracking-widest text-rugbyRed min-w-[160px] pt-1">{cfg.key}</span>
+
+                                {/* Value — read-only or edit mode */}
+                                <div className="flex-1">
+                                    {isEditing ? (
+                                        isJson ? (
+                                            <textarea
+                                                className="bg-gray-700 text-gray-200 font-mono text-xs px-3 py-2 border border-white/20 outline-none w-full min-h-[6rem] resize-y"
+                                                value={editValue}
+                                                onChange={(e) => setEditValue(e.target.value)}
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <input
+                                                className="bg-gray-700 text-gray-200 font-bold px-3 py-2 border border-white/20 outline-none w-full"
+                                                value={editValue}
+                                                onChange={(e) => setEditValue(e.target.value)}
+                                                autoFocus
+                                            />
+                                        )
+                                    ) : (
+                                        <span className={`text-gray-300 font-bold break-all ${isJson ? 'font-mono text-xs' : ''}`}>
+                                            {typeof cfg.value === 'string' ? cfg.value : JSON.stringify(cfg.value)}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Action buttons */}
+                                <div className="flex items-center space-x-2 shrink-0">
+                                    {isEditing ? (
+                                        <>
+                                            <button
+                                                onClick={() => saveEdit(cfg.key)}
+                                                className="flex items-center space-x-1 bg-rugbyRed hover:bg-red-700 text-white px-3 py-1.5 text-xs font-bold uppercase"
+                                            >
+                                                <Save size={13} /><span>Save</span>
+                                            </button>
+                                            <button
+                                                onClick={cancelEdit}
+                                                className="flex items-center space-x-1 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 text-xs font-bold uppercase"
+                                            >
+                                                <X size={13} /><span>Cancel</span>
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => startEdit(cfg)}
+                                                className="flex items-center space-x-1 text-gray-400 hover:text-white px-2 py-1.5 text-xs font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Pencil size={13} /><span>Edit</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(cfg.key)}
+                                                className="text-gray-500 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <button onClick={() => handleDelete(cfg.key)} className="text-gray-500 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100">
-                            <Trash2 size={14} />
-                        </button>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
+
             {configs.length === 0 && <p className="text-gray-500 text-center py-12 font-bold uppercase">No config entries yet</p>}
 
             <div className="mt-8 bg-white/5 border border-white/10 p-6">
                 <h3 className="text-sm font-black uppercase text-gray-400 mb-4">Common Keys</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs font-bold text-gray-500">
                     {['google_maps_link', 'enter_team_deadlines', 'enter_team_fees', 'tickets_group_image'].map(k => (
-                        <span key={k} className="bg-gray-800 px-3 py-2 cursor-pointer hover:text-white transition-colors" onClick={() => setForm({ ...form, key: k })}>
+                        <span key={k} className="bg-gray-800 px-3 py-2 cursor-pointer hover:text-white transition-colors" onClick={() => { setForm({ ...form, key: k }); setShowForm(true); }}>
                             {k}
                         </span>
                     ))}

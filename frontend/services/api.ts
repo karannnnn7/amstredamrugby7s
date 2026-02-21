@@ -1,17 +1,9 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
-function getToken(): string | null {
-    return localStorage.getItem('token');
-}
 
 async function request(endpoint: string, options: RequestInit = {}) {
-    const token = getToken();
     const headers: Record<string, string> = {
         ...(options.headers as Record<string, string> || {}),
     };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
     // Don't set Content-Type for FormData (browser sets it with boundary)
     if (!(options.body instanceof FormData)) {

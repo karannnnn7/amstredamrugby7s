@@ -5,7 +5,7 @@ import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   Menu, X, Trophy, Ticket, Users, Info, Calendar, Camera,
   Heart, Mail, TreeDeciduous, MapPin, Facebook, Instagram, Twitter,
-  RefreshCw, LogIn
+  RefreshCw
 } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import TicketsPage from './pages/TicketsPage';
@@ -20,9 +20,6 @@ import CharityPage from './pages/CharityPage';
 import ContactPage from './pages/ContactPage';
 
 import BackToTop from './components/BackToTop';
-import { AuthProvider } from './context/auth';
-
-
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -53,7 +50,6 @@ const Navbar = () => {
         { name: 'Photos', path: '/photos', icon: <Camera size={16} /> },
         { name: 'Charity', path: '/charity', icon: <Heart size={16} /> },
         { name: 'Contact', path: '/contact', icon: <Mail size={16} /> },
-
       ]
     },
   ];
@@ -233,20 +229,15 @@ const Footer = () => {
   );
 };
 
-const AppContent: React.FC = () => {
-  const location = useLocation();
-  /* const isAdminRoute = location.pathname.startsWith('/admin'); */
-  /* const isLoginRoute = location.pathname === '/login'; */
-  const showPublicLayout = true;
-
+const App: React.FC = () => {
   return (
-    <>
+    <HashRouter>
+      <Toaster position="top-right" />
       <ScrollToTop />
       <div className="min-h-screen flex flex-col font-sans antialiased">
-        {showPublicLayout && <Navbar />}
-        <main className={`flex-grow ${showPublicLayout ? 'pt-20' : ''}`}>
+        <Navbar />
+        <main className="flex-grow pt-20">
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/tickets" element={<TicketsPage />} />
             <Route path="/enter-team" element={<EnterTeamPage />} />
@@ -258,23 +249,11 @@ const AppContent: React.FC = () => {
             <Route path="/photos" element={<PhotosPage />} />
             <Route path="/charity" element={<CharityPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </main>
-        {showPublicLayout && <Footer />}
-        {showPublicLayout && <BackToTop />}
+        <Footer />
+        <BackToTop />
       </div>
-    </>
-  );
-};
-
-const App: React.FC = () => {
-  return (
-    <HashRouter>
-      <AuthProvider>
-        <Toaster position="top-right" />
-        <AppContent />
-      </AuthProvider>
     </HashRouter>
   );
 };
