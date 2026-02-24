@@ -151,7 +151,7 @@ const RecyclePage = () => {
               className="relative z-10 w-full h-[600px] object-cover skew-y-[-2deg] grayscale group-hover:grayscale-0 transition-all duration-1000 shadow-2xl"
               alt="Stadium Cleanup"
             />
-            <div className="absolute -top-10 -right-10 bg-rugbyRed p-12 skew-x-[10deg] shadow-2xl">
+            <div className="absolute z-20 -top-10 -right-10 bg-rugbyRed p-12 skew-x-[10deg] shadow-2xl">
               <div className="skew-x-[-10deg]">
                 <span className="block text-5xl font-black italic text-white leading-none mb-2">92%</span>
                 <span className="block text-xs font-black uppercase tracking-widest text-white/60">DIVERTED IN 2024</span>
