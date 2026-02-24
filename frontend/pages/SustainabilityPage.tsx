@@ -5,6 +5,7 @@ import api from '../services/api';
 
 const SustainabilityPage = () => {
   const [heroContent, setHeroContent] = React.useState({ heading: "Green\nRugby", subheading: "Our commitment to a zero-impact festival by 2030." });
+  const [heroImg, setHeroImg] = React.useState('/assets/sustainability.jpg');
 
   React.useEffect(() => {
     api.get('/content/page/sustainability/hero').then(r => {
@@ -13,6 +14,12 @@ const SustainabilityPage = () => {
           heading: r.data.heading || "Green\nRugby",
           subheading: r.data.subheading || "Our commitment to a zero-impact festival by 2030."
         });
+      }
+    }).catch(() => { });
+
+    api.get('/images?type=sustainability&limit=1').then(r => {
+      if (r.data && r.data.length > 0) {
+        setHeroImg(r.data[0].img);
       }
     }).catch(() => { });
   }, []);
@@ -58,7 +65,7 @@ const SustainabilityPage = () => {
           </div>
           <div className="relative">
             <div className="aspect-square bg-green-500/10 skew-x-[-10deg] absolute inset-0 -translate-x-4 translate-y-4" />
-            <img src="https://images.unsplash.com/photo-1542601906970-1419d000a920?q=80&w=800" className="relative z-10 w-full aspect-square object-cover skew-x-[-10deg]" />
+            <img src={heroImg} className="relative z-10 w-full aspect-square object-cover skew-x-[-10deg]" alt="Playing for the Future" />
           </div>
         </div>
 

@@ -19,6 +19,7 @@ const Step = ({ num, title, desc, icon }: any) => (
 
 const RecyclePage = () => {
   const [heroContent, setHeroContent] = React.useState({ heading: "The\nSystem", subheading: "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030." });
+  const [heroImg, setHeroImg] = React.useState('/assets/recycle.jpg');
 
   React.useEffect(() => {
     api.get('/content/page/recycle/hero').then(r => {
@@ -27,6 +28,12 @@ const RecyclePage = () => {
           heading: r.data.heading || "The\nSystem",
           subheading: r.data.subheading || "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030."
         });
+      }
+    }).catch(() => { });
+
+    api.get('/images?type=recycle&limit=1').then(r => {
+      if (r.data && r.data.length > 0) {
+        setHeroImg(r.data[0].img);
       }
     }).catch(() => { });
   }, []);
@@ -140,7 +147,7 @@ const RecyclePage = () => {
           <div className="relative group">
             <div className="absolute -inset-4 border-2 border-electricBlue transform -rotate-3 transition-transform group-hover:rotate-0" />
             <img
-              src="https://images.unsplash.com/photo-1542601906970-1419d000a920?q=80&w=1200"
+              src={heroImg}
               className="relative z-10 w-full h-[600px] object-cover skew-y-[-2deg] grayscale group-hover:grayscale-0 transition-all duration-1000 shadow-2xl"
               alt="Stadium Cleanup"
             />

@@ -17,6 +17,41 @@ const RuleCard = ({ title, rules }: any) => (
   </div>
 );
 
+const defaultRules = [
+  {
+    _id: "default-1",
+    title: "CODE OF CONDUCT",
+    rules: [
+      "Respect all match officials, players, and staff at all times.",
+      "Any form of abuse, physical or verbal, will result in immediate ejection from the tournament grounds."
+    ]
+  },
+  {
+    _id: "default-2",
+    title: "MATCH FORMAT",
+    rules: [
+      "Standard Sevens rugby rules apply as per World Rugby.",
+      "Matches consist of two 7-minute halves with a 2-minute half-time."
+    ]
+  },
+  {
+    _id: "default-3",
+    title: "SQUAD SIZES",
+    rules: [
+      "Maximum of 12 players per squad for the weekend.",
+      "Only 7 players on the field from each team at any given time."
+    ]
+  },
+  {
+    _id: "default-4",
+    title: "SAFETY & MEDICAL",
+    rules: [
+      "All players must wear appropriate studded footwear and mouthguards.",
+      "Medical staff have the final say on a player's ability to continue if an injury occurs."
+    ]
+  }
+];
+
 const RulesPage = () => {
   const [heroContent, setHeroContent] = React.useState({ heading: "Tournament\nDirectives", subheading: "Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units." });
   const [rules, setRules] = React.useState<any[]>([]);
@@ -67,9 +102,13 @@ const RulesPage = () => {
                 />
               ))
             ) : (
-              // Fallback/Loading state or keep hardcoded as initial state if preferred, 
-              // but user wants dynamic. Let's just show a message if empty or nothing.
-              <p className="col-span-2 text-gray-500 font-bold italic">Loading rules...</p>
+              defaultRules.map((rule) => (
+                <RuleCard
+                  key={rule._id}
+                  title={rule.title}
+                  rules={rule.rules || []}
+                />
+              ))
             )}
           </div>
 

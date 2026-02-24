@@ -15,12 +15,14 @@ const PhotosPage = () => {
   // Fallback images if nothing is found (only used on initial load if empty and no categories)
   const [useFallback, setUseFallback] = useState(false);
   const fallbackImages = [
-    { img: "https://images.unsplash.com/photo-1551240111-20980590a204?q=80&w=800", type: "2024 Highlights" },
-    { img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800", type: "2024 Highlights" },
-    { img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=800", type: "2024 Highlights" },
-    { img: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=800", type: "2023 Archive" },
-    { img: "https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=800", type: "2023 Archive" },
-    { img: "https://images.unsplash.com/photo-1514525253344-f85653b7419b?q=80&w=800", type: "2023 Archive" },
+    { img: "/assets/partners/S1.webp", type: "Gallery" },
+    { img: "/assets/partners/S2.webp", type: "Gallery" },
+    { img: "/assets/partners/S3.webp", type: "Gallery" },
+    { img: "/assets/partners/S4.webp", type: "Gallery" },
+    { img: "/assets/partners/S5.webp", type: "Gallery" },
+    { img: "/assets/partners/S6.webp", type: "Gallery" },
+    { img: "/assets/partners/T1.webp", type: "Gallery" },
+    { img: "/assets/partners/T3.webp", type: "Gallery" },
   ];
 
   const fetchCategories = () => {
@@ -50,10 +52,10 @@ const PhotosPage = () => {
       const newImages = r.data || [];
       if (reset) {
         setImages(newImages);
-        // If no images at all and no categories, trigger fallback
-        if (newImages.length === 0 && categories.length === 0 && activeType === 'all') {
-          // Only use fallback if we really have nothing
-          // But if we have categories, we should just show empty state
+        if (newImages.length === 0) {
+          setUseFallback(true);
+        } else {
+          setUseFallback(false);
         }
       } else {
         setImages(prev => [...prev, ...newImages]);
@@ -148,12 +150,12 @@ const PhotosPage = () => {
           </div>
         </div>
 
-        {loading && images.length === 0 ? (
+        {loading && images.length === 0 && !useFallback ? (
           <div className="text-center py-20 text-gray-400 text-xl font-bold uppercase">Loading photos...</div>
         ) : (
           <>
             <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
-              {images.map((item, i) => (
+              {(useFallback ? fallbackImages : images).map((item, i) => (
                 <div key={i} className="relative group overflow-hidden bg-black rounded-sm skew-x-[-2deg] flex items-center justify-center min-h-[300px]">
                   <img src={item.img} className="w-full h-auto max-h-[500px] object-contain grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-rugbyRed/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
@@ -161,7 +163,7 @@ const PhotosPage = () => {
                   </div>
                 </div>
               ))}
-              {images.length === 0 && !loading && (
+              {images.length === 0 && !loading && !useFallback && (
                 <div className="col-span-full text-center text-gray-500 py-12 font-bold uppercase">No photos found in this category</div>
               )}
             </div>

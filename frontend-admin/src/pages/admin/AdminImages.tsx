@@ -150,6 +150,8 @@ const AdminImages = () => {
                                 <option value="festival">Festival Section</option>
                                 <option value="social">Social Gallery</option>
                                 <option value="news">News</option>
+                                <option value="recycle">Recycle Page</option>
+                                <option value="sustainability">Sustainability Page</option>
                             </optgroup>
                             {categories.length > 0 && (
                                 <optgroup label="Photo Categories">
