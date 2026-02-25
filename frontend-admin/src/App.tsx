@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
@@ -12,6 +12,7 @@ import AdminTickets from './pages/admin/AdminTickets';
 import AdminNews from './pages/admin/AdminNews';
 import AdminRules from './pages/admin/AdminRules';
 import AdminConfig from './pages/admin/AdminConfig';
+import AdminButtons from './pages/admin/AdminButtons';
 import { AuthProvider } from './context/auth';
 
 const AppContent: React.FC = () => {
@@ -34,6 +35,7 @@ const AppContent: React.FC = () => {
                         <Route path="news" element={<AdminNews />} />
                         <Route path="rules" element={<AdminRules />} />
                         <Route path="config" element={<AdminConfig />} />
+                        <Route path="buttons" element={<AdminButtons />} />
                     </Route>
                 </Routes>
             </div>

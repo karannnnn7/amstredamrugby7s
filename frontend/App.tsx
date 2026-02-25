@@ -20,6 +20,7 @@ import CharityPage from './pages/CharityPage';
 import ContactPage from './pages/ContactPage';
 
 import BackToTop from './components/BackToTop';
+import { ConfigProvider, useConfig } from './context/ConfigContext';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -35,6 +36,7 @@ const ScrollToTop = () => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { getBtnText, getBtnLink } = useConfig();
 
   const navLinks = [
     { name: 'Home', path: '/', icon: <Info size={18} /> },
@@ -94,8 +96,8 @@ const Navbar = () => {
               )
             ))}
 
-            <Link to="/tickets" className="bg-rugbyRed hover:bg-red-700 text-white px-6 py-3 font-black uppercase tracking-widest skew-x-[-12deg] transition-all hover:scale-105 active:scale-95">
-              <span className="block skew-x-[12deg]">Buy Tickets</span>
+            <Link to={getBtnLink('btn_nav_tickets_link', '/tickets')} className="bg-rugbyRed hover:bg-red-700 text-white px-6 py-3 font-black uppercase tracking-widest skew-x-[-12deg] transition-all hover:scale-105 active:scale-95">
+              <span className="block skew-x-[12deg]">{getBtnText('btn_nav_tickets_text', 'Buy Tickets')}</span>
             </Link>
           </div>
 
@@ -138,8 +140,8 @@ const Navbar = () => {
             )
           ))}
 
-          <Link to="/tickets" onClick={() => setIsOpen(false)} className="block w-full text-center bg-rugbyRed p-4 font-black uppercase tracking-widest">
-            Buy Tickets
+          <Link to={getBtnLink('btn_nav_tickets_link', '/tickets')} onClick={() => setIsOpen(false)} className="block w-full text-center bg-rugbyRed p-4 font-black uppercase tracking-widest">
+            {getBtnText('btn_nav_tickets_text', 'Buy Tickets')}
           </Link>
         </div>
       )}
@@ -231,30 +233,32 @@ const Footer = () => {
 
 const App: React.FC = () => {
   return (
-    <HashRouter>
-      <Toaster position="top-right" />
-      <ScrollToTop />
-      <div className="min-h-screen flex flex-col font-sans antialiased">
-        <Navbar />
-        <main className="flex-grow pt-20">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/tickets" element={<TicketsPage />} />
-            <Route path="/enter-team" element={<EnterTeamPage />} />
-            <Route path="/teams" element={<TeamsPage />} />
-            <Route path="/visitors" element={<VisitorsPage />} />
-            <Route path="/rules" element={<RulesPage />} />
-            <Route path="/sustainability" element={<SustainabilityPage />} />
-            <Route path="/recycle" element={<RecyclePage />} />
-            <Route path="/photos" element={<PhotosPage />} />
-            <Route path="/charity" element={<CharityPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </main>
-        <Footer />
-        <BackToTop />
-      </div>
-    </HashRouter>
+    <ConfigProvider>
+      <HashRouter>
+        <Toaster position="top-right" />
+        <ScrollToTop />
+        <div className="min-h-screen flex flex-col font-sans antialiased">
+          <Navbar />
+          <main className="flex-grow pt-20">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/tickets" element={<TicketsPage />} />
+              <Route path="/enter-team" element={<EnterTeamPage />} />
+              <Route path="/teams" element={<TeamsPage />} />
+              <Route path="/visitors" element={<VisitorsPage />} />
+              <Route path="/rules" element={<RulesPage />} />
+              <Route path="/sustainability" element={<SustainabilityPage />} />
+              <Route path="/recycle" element={<RecyclePage />} />
+              <Route path="/photos" element={<PhotosPage />} />
+              <Route path="/charity" element={<CharityPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+            </Routes>
+          </main>
+          <Footer />
+          <BackToTop />
+        </div>
+      </HashRouter>
+    </ConfigProvider>
   );
 };
 

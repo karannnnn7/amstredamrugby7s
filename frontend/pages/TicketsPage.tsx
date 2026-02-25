@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Ticket, Star, Zap, Users, Check, ShieldCheck, Clock, MapPin, Music, Utensils } from 'lucide-react';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 import TicketCard from '../components/TicketCard';
 
 const TicketsPage = () => {
+  const { getBtnText, getBtnLink } = useConfig();
   const [heroHeading, setHeroHeading] = useState("Claim Your Pass");
   const [heroSubtext, setHeroSubtext] = useState("The Amsterdam Rugby 7s is more than a game—it's a massive multi-stage festival. Select your level of entry below.");
 
@@ -95,7 +98,15 @@ const TicketsPage = () => {
 
           <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto mb-32">
             {tickets.map((t, i) => (
-              <TicketCard key={i} title={t.title} price={t.price} features={t.features} recommended={t.recommended} />
+              <TicketCard
+                key={i}
+                title={t.title}
+                price={t.price}
+                features={t.features}
+                recommended={t.recommended}
+                btnText={getBtnText('btn_tickets_buy_text', 'Book Now')}
+                btnLink={getBtnLink('btn_tickets_buy_link', '/tickets')}
+              />
             ))}
           </div>
         </div>
@@ -154,7 +165,9 @@ const TicketsPage = () => {
             </div>
 
             <div className="mt-12">
-              <Button variant="outline" className="px-12 py-5">Request Group Quote</Button>
+              <Link to={getBtnLink('btn_tickets_quote_link', '#')}>
+                <Button variant="outline" className="px-12 py-5">{getBtnText('btn_tickets_quote_text', 'Request Group Quote')}</Button>
+              </Link>
             </div>
           </div>
           <div className="relative">

@@ -4,7 +4,7 @@ import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-d
 import { useAuth } from '../../context/auth';
 import {
     Image, FileText, Users, Trophy, Ticket, Newspaper, Shield, Settings,
-    LayoutDashboard, LogOut, ChevronRight, Menu, X
+    LayoutDashboard, LogOut, ChevronRight, Menu, X, Link as LinkIcon
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -17,6 +17,7 @@ const sidebarLinks = [
     { name: 'News', path: '/admin/news', icon: <Newspaper size={18} /> },
     { name: 'Rules', path: '/admin/rules', icon: <Shield size={18} /> },
     { name: 'Site Config', path: '/admin/config', icon: <Settings size={18} /> },
+    { name: 'Buttons', path: '/admin/buttons', icon: <LinkIcon size={18} /> },
 ];
 
 const AdminLayout = () => {
@@ -135,7 +136,7 @@ const AdminLayout = () => {
                 <div className="p-4 border-t border-white/5 shrink-0">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-xs font-black uppercase text-white">{user?.username}</p>
+                            <p className="text-xs font-black uppercase text-white">{user?.userName}</p>
                             <p className="text-[10px] font-bold uppercase text-gray-600">{user?.role}</p>
                         </div>
                         <button

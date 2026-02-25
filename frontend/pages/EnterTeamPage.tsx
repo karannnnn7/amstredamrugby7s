@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, ChevronRight, Zap, Target, Medal } from 'lucide-react';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 import Step from '../components/Step';
 
 const EnterTeamPage = () => {
+  const { getBtnText, getBtnLink } = useConfig();
   const [heroTitle, setHeroTitle] = useState("Enter Your Battle-Unit");
   const [heroSub, setHeroSub] = useState("Professional, Social, or Legendary.");
   const [heroImg, setHeroImg] = useState("https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=2000");
@@ -130,7 +133,9 @@ const EnterTeamPage = () => {
                   ))}
                 </div>
                 <div className="mt-12">
-                  <Button variant="primary" className="w-full md:w-auto">Start Registration Now</Button>
+                  <Link to={getBtnLink('btn_enter_reg_link', '/enter-team')}>
+                    <Button variant="primary" className="w-full md:w-auto">{getBtnText('btn_enter_reg_text', 'Start Registration Now')}</Button>
+                  </Link>
                 </div>
               </div>
             </div>

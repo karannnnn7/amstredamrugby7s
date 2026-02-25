@@ -4,6 +4,7 @@ import { Trophy, ArrowRight, Play, Users, MapPin, Zap, Award, Star, Globe, Trend
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 import { Image, NewsItem, Sponsor } from '../types';
 
@@ -126,6 +127,7 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 const HomePage = () => {
+  const { getBtnText, getBtnLink } = useConfig();
   const [news, setNews] = useState<NewsItem[]>([
     { _id: '1', title: "2025 Elite Pools Announced", date: "24 APR", category: "Tournament", excerpt: "", img: "/assets/partners/T1.webp" },
     { _id: '2', title: "New Headliner for Saturday Stage", date: "20 APR", category: "Festival", excerpt: "", img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=600" },
@@ -275,8 +277,8 @@ const HomePage = () => {
               {heroContent.subheading}
             </p>
             <div className="flex flex-col sm:flex-row gap-6">
-              <Link to="/tickets"><Button variant="primary" className="text-lg px-12">Buy Tickets Now</Button></Link>
-              <Link to="/enter-team"><Button variant="outline" className="text-lg px-12">Enter Your Team</Button></Link>
+              <Link to={getBtnLink('btn_home_tickets_link', '/tickets')}><Button variant="primary" className="text-lg px-12">{getBtnText('btn_home_tickets_text', 'Buy Tickets Now')}</Button></Link>
+              <Link to={getBtnLink('btn_home_enter_link', '/enter-team')}><Button variant="outline" className="text-lg px-12">{getBtnText('btn_home_enter_text', 'Enter Your Team')}</Button></Link>
             </div>
           </div>
         </div>

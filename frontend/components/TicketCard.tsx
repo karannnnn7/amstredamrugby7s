@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Button from './Button';
 
 interface TicketCardProps {
@@ -7,9 +8,11 @@ interface TicketCardProps {
     price: string;
     features: string[];
     recommended?: boolean;
+    btnText: string;
+    btnLink: string;
 }
 
-const TicketCard: React.FC<TicketCardProps> = ({ title, price, features, recommended = false }) => (
+const TicketCard: React.FC<TicketCardProps> = ({ title, price, features, recommended = false, btnText, btnLink }) => (
     <div className={`relative flex flex-col p-10 rounded-sm overflow-hidden transition-all duration-300 ${recommended ? 'bg-rugbyRed scale-105 z-10 shadow-2xl skew-x-[-2deg]' : 'bg-white text-deepNavy skew-x-[-2deg]'}`}>
         <div className="skew-x-[2deg]">
             {recommended && (
@@ -33,9 +36,11 @@ const TicketCard: React.FC<TicketCardProps> = ({ title, price, features, recomme
                 ))}
             </ul>
 
-            <Button variant={recommended ? 'outline' : 'primary'} className="w-full text-lg py-5">
-                Book Now
-            </Button>
+            <Link to={btnLink} className="block w-full">
+                <Button variant={recommended ? 'outline' : 'primary'} className="w-full text-lg py-5">
+                    {btnText}
+                </Button>
+            </Link>
         </div>
     </div>
 );

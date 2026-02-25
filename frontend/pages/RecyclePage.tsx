@@ -2,7 +2,9 @@
 import React from 'react';
 import { RefreshCw, Trash2, Leaf, Award, ArrowRight, Zap, Recycle, Beer } from 'lucide-react';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 const Step = ({ num, title, desc, icon }: any) => (
   <div className="bg-white/5 border border-white/10 p-10 skew-x-[-4deg] group hover:bg-rugbyRed/20 hover:border-rugbyRed transition-all duration-500">
@@ -18,6 +20,7 @@ const Step = ({ num, title, desc, icon }: any) => (
 );
 
 const RecyclePage = () => {
+  const { getBtnText, getBtnLink } = useConfig();
   const [heroContent, setHeroContent] = React.useState({ heading: "The\nSystem", subheading: "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030." });
   const [heroImg, setHeroImg] = React.useState('/assets/recycle.jpg');
 
@@ -141,7 +144,9 @@ const RecyclePage = () => {
               ))}
             </div>
 
-            <Button variant="secondary" className="px-12 py-5">Learn About the App</Button>
+            <Link to={getBtnLink('btn_recycle_app_link', '#')}>
+              <Button variant="secondary" className="px-12 py-5">{getBtnText('btn_recycle_app_text', 'Learn About the App')}</Button>
+            </Link>
           </div>
 
           <div className="relative group">

@@ -9,6 +9,8 @@ backend/.env
 # frontend
 frontend/node_modules/
 frontend/.env
+frontend-admin/dist/
+frontend/dist/
 
 # frontend-admin
 frontend-admin/node_modules/

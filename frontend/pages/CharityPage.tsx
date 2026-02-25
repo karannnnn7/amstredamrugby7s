@@ -2,9 +2,12 @@
 import React from 'react';
 import { Heart, Globe, Users, Gift } from 'lucide-react';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useConfig } from '../context/ConfigContext';
 
 const CharityPage = () => {
+   const { getBtnText, getBtnLink } = useConfig();
    const [heroContent, setHeroContent] = React.useState({ heading: "Support\nSNSG", subheading: "Rugby For All, Forever." });
 
    React.useEffect(() => {
@@ -57,7 +60,9 @@ const CharityPage = () => {
                      </div>
                   </div>
 
-                  <Button variant="primary">Donate to SNSG</Button>
+                  <Link to={getBtnLink('btn_charity_donate_link', '#')}>
+                     <Button variant="primary">{getBtnText('btn_charity_donate_text', 'Donate to SNSG')}</Button>
+                  </Link>
                </div>
 
                <div className="grid grid-cols-2 gap-4">
