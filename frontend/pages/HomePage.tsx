@@ -333,12 +333,12 @@ const HomePage = () => {
             </h2>
           </div>
 
-          <div className="overflow-hidden">
-            <div className="flex flex-wrap justify-center gap-8 py-8">
-              {officialSponsors.map((partner, i) => (
+          <div className={officialSponsors.length > 4 ? "mask-gradient-to-r from-transparent via-black to-transparent overflow-hidden" : "overflow-hidden"}>
+            <div className={officialSponsors.length > 4 ? "flex whitespace-nowrap animate-[marquee_20s_linear_infinite] hover:[animation-play-state:paused] w-max" : "flex flex-wrap justify-center gap-8 py-8"}>
+              {(officialSponsors.length > 4 ? [...officialSponsors, ...officialSponsors] : officialSponsors).map((partner, i) => (
                 <div
                   key={i}
-                  className="w-64 group relative bg-white/5 border border-white/10 p-8 skew-x-[-10deg] transition-all duration-500 cursor-default aspect-square"
+                  className={`group relative bg-white/5 border border-white/10 p-8 skew-x-[-10deg] transition-all duration-500 cursor-default aspect-square ${officialSponsors.length > 4 ? 'inline-block w-64 mx-4' : 'w-64'}`}
                 >
                   <div className="skew-x-[10deg] flex flex-col items-center text-center w-full h-full justify-center">
                     <div className="mb-4 w-full flex items-center justify-center group-hover:scale-110 transition-all duration-500 h-20">
@@ -359,20 +359,38 @@ const HomePage = () => {
           </div>
 
           {/* Secondary Sponsors */}
-          <div className="mt-24 py-10 border-y border-white/10">
-            <div className="flex flex-wrap justify-center items-center gap-16 px-8">
-              {subSponsors.map((s, si) => (
-                <div key={si} className="flex items-center gap-16">
-                  <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">{s.name}</span>
-                  {si < subSponsors.length - 1 && <div className="w-2 h-2 bg-rugbyRed rotate-45" />}
-                </div>
-              ))}
-            </div>
+          <div className={`mt-24 py-10 border-y border-white/10 ${subSponsors.length > 4 ? 'overflow-hidden relative' : ''}`}>
+            {subSponsors.length > 4 ? (
+              <div className="flex whitespace-nowrap animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused]">
+                {[...Array(2)].map((_, idx) => (
+                  <div key={idx} className="flex items-center space-x-16 px-8">
+                    {subSponsors.map((s, si) => (
+                      <React.Fragment key={si}>
+                        <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">{s.name}</span>
+                        <div className="w-2 h-2 bg-rugbyRed rotate-45" />
+                      </React.Fragment>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap justify-center items-center gap-16 px-8">
+                {subSponsors.map((s, si) => (
+                  <div key={si} className="flex items-center gap-16">
+                    <span className="text-xl font-black italic uppercase text-white/30 hover:text-white transition-colors cursor-default">{s.name}</span>
+                    {si < subSponsors.length - 1 && <div className="w-2 h-2 bg-rugbyRed rotate-45" />}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         <style>{`
-          /* Marquee keyframes removed */
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
         `}</style>
       </section>
 
