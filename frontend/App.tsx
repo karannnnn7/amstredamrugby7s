@@ -57,11 +57,11 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed w-full z-50 bg-deepNavy/90 backdrop-blur-md border-b border-white/10">
+    <nav className="fixed w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-28">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/assets/logo.webp" alt="Amsterdam Rugby 7s Logo" className="h-20 w-auto object-contain skew-x-[-12deg]" />
+            <img src="/assets/logo.webp" alt="Amsterdam Rugby 7s Logo" className="h-28 w-auto object-contain skew-x-[-12deg] " />
           </Link>
 
           {/* Desktop Menu */}
@@ -150,14 +150,7 @@ const Navbar = () => {
 };
 
 const Footer = () => {
-  const sponsors = [
-    { name: 'NIKE', img: '/assets/partners/partner1.webp' },
-    { name: 'HEINEKEN', img: '/assets/partners/partner2.webp' },
-    { name: 'RED BULL', img: '/assets/partners/partner3.webp' },
-    { name: 'DHL', img: '/assets/partners/partner4.webp' },
-    { name: 'GILBERT', img: '/assets/partners/partner5.webp' },
-    { name: 'VODAFONE', img: '/assets/partners/partner6.webp' },
-  ];
+
 
   return (
     <footer className="bg-black text-white pt-20 pb-10 overflow-hidden relative border-t-4 border-rugbyRed">

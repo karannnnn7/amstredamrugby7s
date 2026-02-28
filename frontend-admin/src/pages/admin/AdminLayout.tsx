@@ -4,7 +4,7 @@ import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-d
 import { useAuth } from '../../context/auth';
 import {
     Image, FileText, Users, Trophy, Ticket, Newspaper, Shield, Settings,
-    LayoutDashboard, LogOut, ChevronRight, Menu, X, Link as LinkIcon
+    LayoutDashboard, LogOut, ChevronRight, X, Link as LinkIcon
 } from 'lucide-react';
 
 const sidebarLinks = [

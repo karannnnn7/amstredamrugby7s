@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit2, Save, X, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { Team } from '../../types';
