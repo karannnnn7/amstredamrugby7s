@@ -14,10 +14,8 @@ interface ButtonConfig {
 const BUTTONS: ButtonConfig[] = [
     { label: 'Navbar: Buy Tickets', textKey: 'btn_nav_tickets_text', linkKey: 'btn_nav_tickets_link', defaultText: 'Buy Tickets', defaultLink: '/tickets' },
     { label: 'Home: Buy Tickets', textKey: 'btn_home_tickets_text', linkKey: 'btn_home_tickets_link', defaultText: 'Buy Tickets Now', defaultLink: '/tickets' },
-    { label: 'Home: Enter Team', textKey: 'btn_home_enter_text', linkKey: 'btn_home_enter_link', defaultText: 'Enter Your Team', defaultLink: '/enter-team' },
     { label: 'Tickets: Buy Tickets (Cards)', textKey: 'btn_tickets_buy_text', linkKey: 'btn_tickets_buy_link', defaultText: 'Buy Tickets', defaultLink: '/tickets' },
     { label: 'Tickets: Group Quote', textKey: 'btn_tickets_quote_text', linkKey: 'btn_tickets_quote_link', defaultText: 'Request Group Quote', defaultLink: '#' },
-    { label: 'Enter Team: Registration', textKey: 'btn_enter_reg_text', linkKey: 'btn_enter_reg_link', defaultText: 'Start Registration Now', defaultLink: '/enter-team' },
     { label: 'Charity: Donate', textKey: 'btn_charity_donate_text', linkKey: 'btn_charity_donate_link', defaultText: 'Donate to SNSG', defaultLink: '#' },
     { label: 'Recycle: Learn App', textKey: 'btn_recycle_app_text', linkKey: 'btn_recycle_app_link', defaultText: 'Learn About the App', defaultLink: '#' },
     { label: 'Teams: 7s Package', textKey: 'btn_pkg_7s_text', linkKey: 'btn_pkg_7s_link', defaultText: 'Enter a 7s team', defaultLink: '#' },

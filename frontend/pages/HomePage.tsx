@@ -285,7 +285,6 @@ const HomePage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-6">
               <Link to={getBtnLink('btn_home_tickets_link', '/tickets')}><Button variant="primary" className="text-lg px-12">{getBtnText('btn_home_tickets_text', 'Buy Tickets Now')}</Button></Link>
-              <Link to={getBtnLink('btn_home_enter_link', '/enter-team')}><Button variant="outline" className="text-lg px-12">{getBtnText('btn_home_enter_text', 'Enter Your Team')}</Button></Link>
             </div>
           </div>
         </div>

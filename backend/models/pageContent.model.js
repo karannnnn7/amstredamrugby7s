@@ -3,8 +3,7 @@ import mongoose from "mongoose";
 const pageContentSchema = new mongoose.Schema({
     page: {
         type: String,
-        required: true,
-        enum: ["home", "tickets", "enter-team", "teams", "visitors", "rules", "sustainability", "recycle", "photos", "charity", "contact"]
+        enum: ["home", "tickets", "teams", "visitors", "rules", "sustainability", "recycle", "photos", "charity", "contact"]
     },
     section: {
         type: String,

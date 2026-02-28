@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import TicketsPage from './pages/TicketsPage';
-import EnterTeamPage from './pages/EnterTeamPage';
 import TeamsPage from './pages/TeamsPage';
 import VisitorsPage from './pages/VisitorsPage';
 import RulesPage from './pages/RulesPage';
@@ -41,7 +40,6 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/', icon: <Info size={18} /> },
     { name: 'Tickets', path: '/tickets', icon: <Ticket size={18} /> },
-    { name: 'Enter Team', path: '/enter-team', icon: <Trophy size={18} /> },
     { name: 'Teams', path: '/teams', icon: <Users size={18} /> },
     { name: 'Visitors', path: '/visitors', icon: <MapPin size={18} /> },
     { name: 'Rules', path: '/rules', icon: <Calendar size={18} /> },
@@ -185,10 +183,8 @@ const Footer = () => {
           <div>
             <h4 className="text-xl font-black uppercase mb-6 tracking-wider">Tournament</h4>
             <ul className="space-y-3 text-sm font-bold text-gray-400 uppercase">
-              <li><Link to="/enter-team" className="hover:text-white">Men's Elite</Link></li>
-              <li><Link to="/enter-team" className="hover:text-white">Women's Elite</Link></li>
-              <li><Link to="/enter-team" className="hover:text-white">Social 7s</Link></li>
-              <li><Link to="/enter-team" className="hover:text-white">Veterans 10s</Link></li>
+              <li><Link to="/teams" className="hover:text-white">Participating Teams</Link></li>
+              <li><Link to="/rules" className="hover:text-white">Rules & Guidelines</Link></li>
             </ul>
           </div>
 
@@ -236,7 +232,6 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/tickets" element={<TicketsPage />} />
-              <Route path="/enter-team" element={<EnterTeamPage />} />
               <Route path="/teams" element={<TeamsPage />} />
               <Route path="/visitors" element={<VisitorsPage />} />
               <Route path="/rules" element={<RulesPage />} />

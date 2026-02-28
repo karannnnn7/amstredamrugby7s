@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
 import api from '../../services/api';
 
-const pages = ["home", "tickets", "enter-team", "teams", "visitors", "rules", "sustainability", "recycle", "photos", "charity"];
+const pages = ["home", "tickets", "teams", "visitors", "rules", "sustainability", "recycle", "photos", "charity"];
 
 const sectionConfig: Record<string, { value: string; label: string; fields: string[] }[]> = {
     home: [
@@ -23,9 +23,6 @@ const sectionConfig: Record<string, { value: string; label: string; fields: stri
         { value: 'hero', label: 'Hero Section', fields: ['heading', 'subheading'] },
         { value: 'event-info', label: 'Event Info', fields: ['heading'] },
         { value: 'group-discount', label: 'Group Discount', fields: ['heading', 'body'] }
-    ],
-    "enter-team": [
-        { value: 'hero', label: 'Main Content', fields: ['heading', 'subheading'] }
     ],
     teams: [
         { value: 'hero', label: 'Main Content', fields: ['heading', 'subheading'] }
