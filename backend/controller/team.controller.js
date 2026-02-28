@@ -24,13 +24,13 @@ const getTeamById = asyncHandler(async (req, res) => {
 
 // POST create team (admin)
 const createTeam = asyncHandler(async (req, res) => {
-    const { name, country, category, logo, color } = req.body;
+    const { name, country, price, logo, color } = req.body;
 
-    if (!name || !country || !category) {
-        throw new ApiError(400, "Name, country, and category are required");
+    if (!name || !country || !price) {
+        throw new ApiError(400, "Name, description (country), and price are required");
     }
 
-    const team = await Team.create({ name, country, category, logo, color });
+    const team = await Team.create({ name, country, price, logo, color });
     res.status(201).json(new ApiResponse(201, team, "Team created successfully"));
 });
 
@@ -41,11 +41,11 @@ const updateTeam = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Team not found");
     }
 
-    const { name, country, category, logo, color, isActive } = req.body;
+    const { name, country, price, logo, color, isActive } = req.body;
 
     if (name !== undefined) team.name = name;
     if (country !== undefined) team.country = country;
-    if (category !== undefined) team.category = category;
+    if (price !== undefined) team.price = price;
     if (logo !== undefined) team.logo = logo;
     if (color !== undefined) team.color = color;
     if (isActive !== undefined) team.isActive = isActive;

@@ -10,6 +10,7 @@ import TicketCard from '../components/TicketCard';
 
 const TicketsPage = () => {
   const { getBtnText, getBtnLink } = useConfig();
+  const [eventRegistration, setEventRegistration] = useState("Event Registration 2025");
   const [heroHeading, setHeroHeading] = useState("Claim Your Pass");
   const [heroSubtext, setHeroSubtext] = useState("The Amsterdam Rugby 7s is more than a game—it's a massive multi-stage festival. Select your level of entry below.");
 
@@ -44,6 +45,11 @@ const TicketsPage = () => {
       setHeroHeading('');
       setHeroSubtext('');
     });
+
+    // Event Info
+    api.get('/content/page/tickets/event-info').then(r => {
+      if (r.data?.heading) setEventRegistration(r.data.heading);
+    }).catch(() => { });
 
     // Ticket cards
     api.get('/tickets').then(r => {
@@ -80,8 +86,8 @@ const TicketsPage = () => {
         </div>
 
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">Event Registration 2025</span>
-          <h1 className="text-7xl md:text-[10rem] font-black italic uppercase italic tracking-tighter leading-[0.8] mb-12">
+          <span className="text-xl sm:text-2xl text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">{eventRegistration}</span>
+          <h1 className="text-[5rem] md:text-[11rem] font-black italic uppercase tracking-tighter leading-[0.8] mb-12">
             {heroHeading.includes('\n') ? (
               heroHeading.split('\n').map((line, i, arr) => (
                 <span key={i} className={`block ${i === arr.length - 1 ? 'text-rugbyRed' : ''}`}>

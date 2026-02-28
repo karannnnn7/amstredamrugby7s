@@ -179,6 +179,8 @@ const HomePage = () => {
   });
 
   const [eventDate, setEventDate] = useState("MAY 16-18");
+  const [eventName, setEventName] = useState("Amsterdam Rugby 7s 2025");
+  const [eventLocation, setEventLocation] = useState("Olympic Stadium Precinct, NL");
 
   useEffect(() => {
     // Hero Content
@@ -197,6 +199,11 @@ const HomePage = () => {
     // Event Date
     api.get('/content/page/home/event-date').then(r => {
       if (r.data?.heading) setEventDate(r.data.heading);
+    }).catch(() => { });
+
+    // Event Info (Name & Location)
+    api.get('/content/page/home/event-info').then(r => {
+      if (r.data?.heading) setEventName(r.data.heading);
     }).catch(() => { });
 
     // News (max 3)
@@ -258,11 +265,11 @@ const HomePage = () => {
         {/* Main Hero Content */}
         <div className="relative z-20 max-w-7xl mx-auto px-4 w-full flex-grow flex flex-col justify-center pt-32 pb-20">
           <div className="max-w-4xl drop-shadow-2xl">
-            <div className="flex items-center space-x-2 text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 animate-pulse">
-              <Zap size={20} fill="currentColor" />
-              <span>Amsterdam Rugby 7s 2025</span>
+            <div className="flex items-center space-x-2 text-xl sm:text-2xl text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 animate-pulse">
+              <Zap size={24} fill="currentColor" />
+              <span>{eventName}</span>
             </div>
-            <h1 className="text-6xl sm:text-8xl md:text-[10rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8 transform -rotate-2">
+            <h1 className="text-[5rem] sm:text-[8rem] md:text-[11rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8 transform -rotate-2">
               {heroContent.heading.map((line: string, i: number) => {
                 const isLast = i === heroContent.heading.length - 1;
                 return (
@@ -292,7 +299,7 @@ const HomePage = () => {
             <div className="flex items-center space-x-6 order-1 md:order-2 drop-shadow-lg">
               <div className="flex flex-col items-center md:items-end">
                 <span className="text-3xl md:text-3xl lg:text-4xl font-black italic text-white">{eventDate}</span>
-                <span className="text-xs md:text-sm font-black text-rugbyRed uppercase tracking-widest bg-black/40 px-2 py-0.5">Olympic Stadium Precinct, NL</span>
+                <span className="text-xs md:text-sm font-black text-rugbyRed uppercase tracking-widest bg-black/40 px-2 py-0.5">{eventLocation}</span>
               </div>
               <div className="w-16 h-16 md:w-20 md:h-20 border-4 border-white rounded-full flex items-center justify-center bg-black/20 backdrop-blur-sm hover:bg-white hover:text-deepNavy transition-all cursor-pointer group shadow-2xl">
                 <Link to="/home">

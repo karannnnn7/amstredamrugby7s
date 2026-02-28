@@ -20,7 +20,7 @@ const AdminConfig = () => {
             if (r.data) {
                 const hiddenKeys = ['photo_categories'];
                 const entries = Object.entries(r.data)
-                    .filter(([key]) => !hiddenKeys.includes(key))
+                    .filter(([key]) => !hiddenKeys.includes(key) && !key.startsWith('btn_'))
                     .map(([key, value]) => ({ key, value }));
                 setConfigs(entries as SiteConfig[]);
             }

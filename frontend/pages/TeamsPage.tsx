@@ -1,151 +1,140 @@
-
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Shield, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Shield } from 'lucide-react';
+import Button from '../components/Button';
+import { useConfig } from '../context/ConfigContext';
 import api from '../services/api';
 
+interface TeamPackage {
+  _id: string;
+  name: string;
+  country: string; // Used as description based on latest AdminTeams setup
+  color: string;
+  btnTextKey: string;
+  btnLinkKey: string;
+  defaultBtnText: string;
+  price?: string;
+}
+
+const DefaultPackages: TeamPackage[] = [
+  {
+    _id: "default-1",
+    name: "7s Men / Women Team Package",
+    country: "Team up for the Amsterdam 7s Men / Women Elite Pier or Social Shields 7s competition! This team package includes access to the event for 16 people (e.g. 13 player, 3 staff), lunch on match days, a match ball, a team photo, and an unforgettable weekend!",
+    color: "bg-blue-600",
+    btnTextKey: "btn_pkg_7s_text",
+    btnLinkKey: "btn_pkg_7s_link",
+    defaultBtnText: "Enter a 7s team",
+    price: "€640,-"
+  },
+  {
+    _id: "default-2",
+    name: "10s Vets Men Team Package",
+    country: "Register your team for the Men or Women 10s veterans competition. (age 35+) This team package includes access to the event for 18 people. (e.g. 15 players, 3 staff) lunch on matchdays, a match ball, a team photo, and an unforgettable weekend!",
+    color: "bg-red-600",
+    btnTextKey: "btn_pkg_10s_text",
+    btnLinkKey: "btn_pkg_10s_link",
+    defaultBtnText: "Enter a 10s team",
+    price: "€720,-"
+  },
+  {
+    _id: "default-3",
+    name: "Team tent",
+    country: "Get your team a personal spot at the tournament grounds. Customize it with branded items (no stickers). This space is convenient during competition days for storing your belongings, taking a moment, dealing with minor injuries, etc. \n\n*only to use during the day. Bringing your tents onto the premises is not allowed.",
+    color: "bg-green-600",
+    btnTextKey: "btn_pkg_tent_text",
+    btnLinkKey: "btn_pkg_tent_link",
+    defaultBtnText: "Rent a team tent",
+    price: "€350,-"
+  }
+];
+
 const TeamsPage = () => {
-  const [filter, setFilter] = useState('ALL');
-  const [teams, setTeams] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const limit = 12;
-
-  const categories = ['ALL', 'ELITE MEN', 'ELITE WOMEN', 'SOCIAL', 'VETS'];
-
-  // Fallback data
-  const fallbackTeams = [
-    { name: "SAMURAI RFC", country: "INTERNATIONAL", category: "ELITE MEN", logo: "SR", color: "bg-red-600" },
-    { name: "NETHERLANDS 7S", country: "NETHERLANDS", category: "ELITE WOMEN", logo: "NL", color: "bg-orange-500" },
-    { name: "LONDON SCOTTISH", country: "UK", category: "ELITE MEN", logo: "LS", color: "bg-blue-800" },
-    { name: "PARIS FROGIES", country: "FRANCE", category: "SOCIAL", logo: "PF", color: "bg-blue-600" },
-    { name: "AMSTERDAM AC", country: "NETHERLANDS", category: "VETS", logo: "AC", color: "bg-black" },
-    { name: "FIJI BABAS", country: "FIJI", category: "ELITE MEN", logo: "FB", color: "bg-cyan-500" },
-    { name: "SOUTH AFRICA AS", country: "SOUTH AFRICA", category: "ELITE WOMEN", logo: "SA", color: "bg-green-700" },
-    { name: "GERMAN EAGLES", country: "GERMANY", category: "SOCIAL", logo: "GE", color: "bg-yellow-500" },
-    { name: "DUBLIN KNIGHTS", country: "IRELAND", category: "VETS", logo: "DK", color: "bg-green-600" },
-    { name: "NZ MAORI", country: "NEW ZEALAND", category: "ELITE MEN", logo: "NZ", color: "bg-zinc-900" },
-    { name: "IBERIAN LIONS", country: "SPAIN", category: "ELITE MEN", logo: "IL", color: "bg-red-700" },
-    { name: "SCANDI RAIDERS", country: "DENMARK", category: "SOCIAL", logo: "SR", color: "bg-red-500" },
-  ];
+  const { getBtnText, getBtnLink } = useConfig();
+  const [packages, setPackages] = useState<TeamPackage[]>([]);
 
   useEffect(() => {
-    setLoading(true);
     api.get('/teams').then(r => {
-      if (r.data?.length) {
-        setTeams(r.data.map((t: any) => ({
-          name: t.name,
-          country: t.country,
-          category: t.category,
-          logo: t.logo || t.name?.substring(0, 2),
-          color: t.color || 'bg-gray-600',
-        })));
+      if (r.data && r.data.length > 0) {
+        const mappedPackages = r.data.map((t: any) => {
+          let btnTextKey = "btn_pkg_7s_text";
+          let btnLinkKey = "btn_pkg_7s_link";
+          let defaultBtnText = "Enter a 7s team";
+
+          if (t.name === '10s Vets Men Team Package') {
+            btnTextKey = "btn_pkg_10s_text";
+            btnLinkKey = "btn_pkg_10s_link";
+            defaultBtnText = "Enter a 10s team";
+          } else if (t.name === 'Team tent') {
+            btnTextKey = "btn_pkg_tent_text";
+            btnLinkKey = "btn_pkg_tent_link";
+            defaultBtnText = "Rent a team tent";
+          }
+
+          return {
+            _id: t._id,
+            name: t.name,
+            country: t.country,
+            color: t.color || 'bg-blue-600',
+            price: t.price || undefined,
+            btnTextKey,
+            btnLinkKey,
+            defaultBtnText
+          };
+        });
+        setPackages(mappedPackages);
       } else {
-        setTeams(fallbackTeams);
+        setPackages(DefaultPackages);
       }
     }).catch(() => {
-      setTeams(fallbackTeams);
-    }).finally(() => setLoading(false));
+      setPackages(DefaultPackages);
+    });
   }, []);
-
-  const filteredTeams = filter === 'ALL' ? teams : teams.filter(t => t.category === filter);
-  const totalPages = Math.ceil(filteredTeams.length / limit);
-  const paginatedTeams = filteredTeams.slice((page - 1) * limit, page * limit);
-
-  // Reset page when filter changes
-  useEffect(() => { setPage(1); }, [filter]);
 
   return (
     <div className="bg-deepNavy min-h-screen pb-24">
       <section className="bg-white text-deepNavy pt-32 pb-16 px-4 skew-divider mb-20">
-        <div className="max-w-7xl mx-auto flex flex-col md:row justify-between items-end gap-8">
-          <div>
-            <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-[0.8] tracking-tighter mb-4">
-              Registered <br /> <span className="text-rugbyRed">Squads</span>
-            </h1>
-            <p className="text-lg font-bold text-gray-500 max-w-xl">Meet the warriors competing in this year's tournament. Filters below by category.</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {categories.map(c => (
-              <button
-                key={c}
-                onClick={() => setFilter(c)}
-                className={`px-4 py-2 font-black uppercase text-[10px] tracking-widest skew-x-[-10deg] transition-all border-2 ${filter === c ? 'bg-rugbyRed border-rugbyRed text-white' : 'border-deepNavy/10 hover:border-rugbyRed'
-                  }`}
-              >
-                <span className="block skew-x-[10deg]">{c}</span>
-              </button>
-            ))}
-          </div>
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-[0.8] tracking-tighter mb-4">
+            Registered <br /> <span className="text-rugbyRed">Squads</span>
+          </h1>
+          <p className="text-lg font-bold text-gray-500 max-w-xl">Meet the warriors competing in this year's tournament.</p>
         </div>
       </section>
 
       <div className="max-w-7xl mx-auto px-4">
-        {loading ? (
-          <div className="text-center py-20 text-gray-400 text-xl font-bold uppercase">Loading teams...</div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {paginatedTeams.map((team, i) => (
-                <div key={i} className="group bg-white/5 border border-white/10 p-6 skew-x-[-4deg] hover:bg-white/10 transition-all cursor-pointer relative overflow-hidden">
-                  <div className={`absolute top-0 right-0 w-24 h-24 ${team.color} opacity-20 -mr-8 -mt-8 rotate-45 transition-all group-hover:scale-150 group-hover:opacity-40`} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {packages.map((pkg) => (
+            <div key={pkg._id} className="group relative bg-[#0a192f] border border-white/5 overflow-hidden flex flex-col hover:border-rugbyRed/50 transition-colors duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent transform rotate-45 translate-x-16 -translate-y-16" />
 
-                  <div className="skew-x-[4deg] relative z-10">
-                    <div className="flex items-center justify-between mb-8">
-                      <div className={`w-12 h-12 ${team.color} flex items-center justify-center font-black italic text-xl border-2 border-white/20 shadow-lg`}>
-                        {team.logo}
-                      </div>
-                      <Shield className="text-white/20 group-hover:text-rugbyRed transition-colors" />
-                    </div>
-
-                    <h3 className="text-xl font-black uppercase italic italic mb-1 leading-none">{team.name}</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-rugbyRed mb-4">{team.country}</p>
-
-                    <div className="flex justify-between items-center pt-4 border-t border-white/10">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{team.category}</span>
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    </div>
+              <div className="p-8 flex flex-col flex-grow relative z-10">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className={`w-16 h-16 ${pkg.color} flex items-center justify-center shadow-lg transform -skew-x-12`}>
+                    <Shield className="text-white transform skew-x-12" size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase text-white leading-tight">{pkg.name}</h3>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-12">
-                <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="bg-white/10 p-3 disabled:opacity-30 hover:bg-rugbyRed transition-colors"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <div className="flex gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`w-10 h-10 font-black text-sm ${page === p ? 'bg-rugbyRed' : 'bg-white/10 hover:bg-white/20'} transition-colors`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="bg-white/10 p-3 disabled:opacity-30 hover:bg-rugbyRed transition-colors"
-                >
-                  <ChevronRight size={20} />
-                </button>
+                {pkg.price && (
+                  <div className="mb-6">
+                    <span className="text-2xl font-black text-rugbyRed tracking-tighter">{pkg.price}</span>
+                  </div>
+                )}
+
+                <p className="text-gray-400 text-sm font-bold leading-relaxed mb-8 flex-grow whitespace-pre-line">{pkg.country}</p>
+
+                <Link to={getBtnLink(pkg.btnLinkKey, '#')} className="w-full mt-auto">
+                  <Button variant="primary" className="w-full py-3 text-sm font-black uppercase tracking-widest truncate shadow-lg hover:shadow-xl transform skew-x-[-10deg]">
+                    <span className="block transform skew-x-[10deg]">{getBtnText(pkg.btnTextKey, pkg.defaultBtnText)}</span>
+                  </Button>
+                </Link>
               </div>
-            )}
-
-            <div className="text-center mt-6 text-gray-500 text-xs font-bold uppercase tracking-widest">
-              Showing {paginatedTeams.length} of {filteredTeams.length} teams
             </div>
-          </>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );

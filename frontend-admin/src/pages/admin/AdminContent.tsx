@@ -7,6 +7,7 @@ const pages = ["home", "tickets", "enter-team", "teams", "visitors", "rules", "s
 const sectionConfig: Record<string, { value: string; label: string; fields: string[] }[]> = {
     home: [
         { value: 'hero', label: 'Hero Section', fields: ['heading', 'subheading'] },
+        { value: 'event-info', label: 'Event Info', fields: ['heading'] },
         { value: 'event-date', label: 'Event Date', fields: ['heading'] },
         { value: 'stat-elite-teams', label: 'Stat: Elite Teams', fields: ['heading'] },
         { value: 'stat-global-fans', label: 'Stat: Global Fans', fields: ['heading'] },
@@ -20,6 +21,7 @@ const sectionConfig: Record<string, { value: string; label: string; fields: stri
     ],
     tickets: [
         { value: 'hero', label: 'Hero Section', fields: ['heading', 'subheading'] },
+        { value: 'event-info', label: 'Event Info', fields: ['heading'] },
         { value: 'group-discount', label: 'Group Discount', fields: ['heading', 'body'] }
     ],
     "enter-team": [

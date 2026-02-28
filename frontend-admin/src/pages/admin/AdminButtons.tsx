@@ -20,16 +20,27 @@ const BUTTONS: ButtonConfig[] = [
     { label: 'Enter Team: Registration', textKey: 'btn_enter_reg_text', linkKey: 'btn_enter_reg_link', defaultText: 'Start Registration Now', defaultLink: '/enter-team' },
     { label: 'Charity: Donate', textKey: 'btn_charity_donate_text', linkKey: 'btn_charity_donate_link', defaultText: 'Donate to SNSG', defaultLink: '#' },
     { label: 'Recycle: Learn App', textKey: 'btn_recycle_app_text', linkKey: 'btn_recycle_app_link', defaultText: 'Learn About the App', defaultLink: '#' },
+    { label: 'Teams: 7s Package', textKey: 'btn_pkg_7s_text', linkKey: 'btn_pkg_7s_link', defaultText: 'Enter a 7s team', defaultLink: '#' },
+    { label: 'Teams: 10s Package', textKey: 'btn_pkg_10s_text', linkKey: 'btn_pkg_10s_link', defaultText: 'Enter a 10s team', defaultLink: '#' },
+    { label: 'Teams: Tent Package', textKey: 'btn_pkg_tent_text', linkKey: 'btn_pkg_tent_link', defaultText: 'Rent a team tent', defaultLink: '#' },
 ];
 
 const AdminButtons = () => {
-    const [configs, setConfigs] = useState<Record<string, string>>({});
+    const [localValues, setLocalValues] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [initialLoaded, setInitialLoaded] = useState(false);
 
     const fetchConfig = () => {
         api.get('/config').then(r => {
             if (r.data) {
-                setConfigs(r.data);
+                // Pre-fill local values state
+                const newLocal: Record<string, string> = {};
+                BUTTONS.forEach(btn => {
+                    newLocal[btn.textKey] = r.data[btn.textKey] || btn.defaultText;
+                    newLocal[btn.linkKey] = r.data[btn.linkKey] || btn.defaultLink;
+                });
+                setLocalValues(newLocal);
+                setInitialLoaded(true);
             }
         }).catch(() => toast.error('Failed to fetch config'));
     };
@@ -51,6 +62,8 @@ const AdminButtons = () => {
         setLoading(false);
     };
 
+    if (!initialLoaded) return <div className="p-8 text-white font-bold">Loading configs...</div>;
+
     return (
         <div>
             <div className="mb-8">
@@ -60,8 +73,8 @@ const AdminButtons = () => {
 
             <div className="grid md:grid-cols-2 gap-6">
                 {BUTTONS.map((btn) => {
-                    const currentText = configs[btn.textKey] || btn.defaultText;
-                    const currentLink = configs[btn.linkKey] || btn.defaultLink;
+                    const currentText = localValues[btn.textKey] || '';
+                    const currentLink = localValues[btn.linkKey] || '';
 
                     return (
                         <div key={btn.textKey} className="bg-gray-800 border border-white/5 p-5 hover:border-white/10 flex flex-col">
@@ -74,7 +87,8 @@ const AdminButtons = () => {
                                     </label>
                                     <input
                                         className="w-full bg-gray-900 border border-white/10 text-white px-3 py-2 text-sm font-bold focus:border-rugbyRed outline-none transition-colors"
-                                        defaultValue={currentText}
+                                        value={currentText}
+                                        onChange={(e) => setLocalValues({ ...localValues, [btn.textKey]: e.target.value })}
                                         id={btn.textKey}
                                     />
                                 </div>
@@ -84,7 +98,8 @@ const AdminButtons = () => {
                                     </label>
                                     <input
                                         className="w-full bg-gray-900 border border-white/10 text-white px-3 py-2 text-sm font-bold focus:border-rugbyRed outline-none transition-colors"
-                                        defaultValue={currentLink}
+                                        value={currentLink}
+                                        onChange={(e) => setLocalValues({ ...localValues, [btn.linkKey]: e.target.value })}
                                         id={btn.linkKey}
                                     />
                                 </div>
@@ -92,11 +107,7 @@ const AdminButtons = () => {
 
                             <div className="mt-5 pt-4 border-t border-white/5 flex justify-end">
                                 <button
-                                    onClick={() => {
-                                        const textVal = (document.getElementById(btn.textKey) as HTMLInputElement).value;
-                                        const linkVal = (document.getElementById(btn.linkKey) as HTMLInputElement).value;
-                                        handleSave(btn.textKey, btn.linkKey, textVal, linkVal);
-                                    }}
+                                    onClick={() => handleSave(btn.textKey, btn.linkKey, currentText, currentLink)}
                                     disabled={loading}
                                     className="bg-white/10 hover:bg-rugbyRed text-white px-4 py-2 text-xs font-bold uppercase transition-colors flex items-center gap-2 disabled:opacity-50"
                                 >

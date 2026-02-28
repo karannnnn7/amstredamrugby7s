@@ -6,6 +6,7 @@ interface ConfigContextType {
     isLoading: boolean;
     getBtnText: (key: string, defaultText: string) => string;
     getBtnLink: (key: string, defaultLink: string) => string;
+    getText: (key: string, defaultText: string) => string;
 }
 
 const ConfigContext = createContext<ConfigContextType | null>(null);
@@ -35,8 +36,12 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
         return config[key] || defaultLink;
     };
 
+    const getText = (key: string, defaultText: string) => {
+        return config[key] || defaultText;
+    };
+
     return (
-        <ConfigContext.Provider value={{ config, isLoading, getBtnText, getBtnLink }}>
+        <ConfigContext.Provider value={{ config, isLoading, getBtnText, getBtnLink, getText }}>
             {children}
         </ConfigContext.Provider>
     );

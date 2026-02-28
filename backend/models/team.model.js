@@ -3,10 +3,9 @@ import mongoose from "mongoose";
 const teamSchema = new mongoose.Schema({
     name: { type: String, required: true },
     country: { type: String, required: true },
+    price: { type: String },
     category: {
-        type: String,
-        enum: ["ELITE MEN", "ELITE WOMEN", "SOCIAL", "VETS"],
-        required: true
+        type: String
     },
     logo: { type: String },
     color: { type: String, default: "bg-gray-600" },
