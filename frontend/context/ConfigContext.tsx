@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import api from '../services/api';
+import Loader from '../components/Loader';
 
 interface ConfigContextType {
     config: Record<string, string>;
@@ -42,7 +43,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <ConfigContext.Provider value={{ config, isLoading, getBtnText, getBtnLink, getText }}>
-            {children}
+            {isLoading ? <Loader /> : children}
         </ConfigContext.Provider>
     );
 };

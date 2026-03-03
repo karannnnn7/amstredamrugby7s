@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Trophy, ArrowRight, Play, Users, MapPin, Zap, Award, Star, Globe, TrendingUp, Newspaper, Instagram, ShieldCheck, Flame, Truck } from 'lucide-react';
+import Loader from "../components/Loader";
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
@@ -127,6 +128,7 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 const HomePage = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const { getBtnText, getBtnLink } = useConfig();
   const [news, setNews] = useState<NewsItem[]>([
     { _id: '1', title: "2025 Elite Pools Announced", date: "24 APR", category: "Tournament", excerpt: "", img: "/assets/partners/T1.webp" },
@@ -183,78 +185,84 @@ const HomePage = () => {
   const [eventLocation, setEventLocation] = useState("Olympic Stadium Precinct, NL");
 
   useEffect(() => {
-    // Hero Content
-    api.get('/content/page/home/hero').then(r => {
-      if (r.data) {
-        const h = r.data.heading || "Bolder.\nFaster.\nWilder.";
-        const lines = h.split('\n').filter((l: string) => l.trim());
+    setIsLoading(true);
+    Promise.allSettled([
+      // Hero Content
+      api.get('/content/page/home/hero').then(r => {
+        if (r.data) {
+          const h = r.data.heading || "Bolder.\nFaster.\nWilder.";
+          const lines = h.split('\n').filter((l: string) => l.trim());
 
-        setHeroContent({
-          heading: lines.length > 0 ? lines : ["Bolder.", "Faster.", "Wilder."],
-          subheading: r.data.subheading || heroContent.subheading
-        });
-      }
-    }).catch(() => { });
+          setHeroContent({
+            heading: lines.length > 0 ? lines : ["Bolder.", "Faster.", "Wilder."],
+            subheading: r.data.subheading || heroContent.subheading
+          });
+        }
+      }),
 
-    // Event Date
-    api.get('/content/page/home/event-date').then(r => {
-      if (r.data?.heading) setEventDate(r.data.heading);
-    }).catch(() => { });
+      // Event Date
+      api.get('/content/page/home/event-date').then(r => {
+        if (r.data?.heading) setEventDate(r.data.heading);
+      }),
 
-    // Event Info (Name & Location)
-    api.get('/content/page/home/event-info').then(r => {
-      if (r.data?.heading) setEventName(r.data.heading);
-    }).catch(() => { });
+      // Event Info (Name & Location)
+      api.get('/content/page/home/event-info').then(r => {
+        if (r.data?.heading) setEventName(r.data.heading);
+      }),
 
-    // News (max 3)
-    api.get('/news').then(r => { if (r.data?.length) setNews(r.data.slice(0, 3)); }).catch(() => { });
+      // News (max 3)
+      api.get('/news').then(r => { if (r.data?.length) setNews(r.data.slice(0, 3)); }),
 
-    // Official sponsors (with images)
-    api.get('/sponsors?type=official-sponsors').then(r => {
-      if (r.data?.length) setOfficialSponsors(r.data.map((s: Sponsor) => ({ ...s, subName: s.subName || s.role || '' })));
-    }).catch(() => { });
+      // Official sponsors (with images)
+      api.get('/sponsors?type=official-sponsors').then(r => {
+        if (r.data?.length) setOfficialSponsors(r.data.map((s: Sponsor) => ({ ...s, subName: s.subName || s.role || '' })));
+      }),
 
-    // Sub sponsors (text only)
-    api.get('/sponsors?type=subSponsors').then(r => {
-      if (r.data?.length) setSubSponsors(r.data);
-    }).catch(() => { });
+      // Sub sponsors (text only)
+      api.get('/sponsors?type=subSponsors').then(r => {
+        if (r.data?.length) setSubSponsors(r.data);
+      }),
 
-    // Stats
-    api.get('/content/page/home').then(r => {
-      if (r.data) {
-        setStats(prevStats => prevStats.map(s => {
-          const content = r.data.find((c: any) => c.section === s.id);
-          return content ? { ...s, val: content.heading } : s;
-        }));
-      }
-    }).catch(() => { });
+      // Stats
+      api.get('/content/page/home').then(r => {
+        if (r.data) {
+          setStats(prevStats => prevStats.map(s => {
+            const content = r.data.find((c: any) => c.section === s.id);
+            return content ? { ...s, val: content.heading } : s;
+          }));
+        }
+      }),
 
-    // Social images
-    api.get('/images?type=social').then(r => {
-      if (r.data?.length) setSocialImages(r.data.map((i: Image) => i.img));
-    }).catch(() => { });
+      // Social images
+      api.get('/images?type=social').then(r => {
+        if (r.data?.length) setSocialImages(r.data.map((i: Image) => i.img));
+      }),
 
-    // Festival section
-    api.get('/images?type=festival').then(r => {
-      if (r.data?.length >= 1) setFestivalImg1(r.data[0].img);
-      if (r.data?.length >= 2) setFestivalImg2(r.data[1].img);
-    }).catch(() => { });
+      // Festival section
+      api.get('/images?type=festival').then(r => {
+        if (r.data?.length >= 1) setFestivalImg1(r.data[0].img);
+        if (r.data?.length >= 2) setFestivalImg2(r.data[1].img);
+      }),
 
-    // Festival Content
-    api.get('/content/page/home').then(r => {
-      if (r.data) {
-        // Description
-        const desc = r.data.find((c: any) => c.section === 'festival-intro');
-        if (desc?.body) setFestivalDesc(desc.body);
+      // Festival Content
+      api.get('/content/page/home').then(r => {
+        if (r.data) {
+          // Description
+          const desc = r.data.find((c: any) => c.section === 'festival-intro');
+          if (desc?.body) setFestivalDesc(desc.body);
 
-        // Features
-        setFestivalFeatures(prev => prev.map(f => {
-          const content = r.data.find((c: any) => c.section === f.id);
-          return content ? { ...f, title: content.heading || f.title, text: content.subheading || f.text } : f;
-        }));
-      }
-    }).catch(() => { });
+          // Features
+          setFestivalFeatures(prev => prev.map(f => {
+            const content = r.data.find((c: any) => c.section === f.id);
+            return content ? { ...f, title: content.heading || f.title, text: content.subheading || f.text } : f;
+          }));
+        }
+      })
+    ]).finally(() => setIsLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (isLoading) return <Loader />;
 
   return (
     <div className="bg-deepNavy overflow-hidden">
@@ -272,6 +280,8 @@ const HomePage = () => {
             <h1 className="text-[5rem] sm:text-[8rem] md:text-[11rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8 transform -rotate-2">
               {heroContent.heading.map((line: string, i: number) => {
                 const isLast = i === heroContent.heading.length - 1;
+                if (isLoading) return <Loader />;
+
                 return (
                   <React.Fragment key={i}>
                     {isLast ? <span className="text-rugbyRed">{line}</span> : line}
