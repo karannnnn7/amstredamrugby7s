@@ -171,7 +171,7 @@ const TicketsPage = () => {
             </div>
 
             <div className="mt-12">
-              <Link to={getBtnLink('btn_tickets_quote_link', '#')}>
+              <Link to={getBtnLink('btn_tickets_quote_link', '#')} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="px-12 py-5">{getBtnText('btn_tickets_quote_text', 'Request Group Quote')}</Button>
               </Link>
             </div>

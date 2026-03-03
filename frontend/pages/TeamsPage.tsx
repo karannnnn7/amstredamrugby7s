@@ -126,7 +126,7 @@ const TeamsPage = () => {
 
                 <p className="text-gray-400 text-sm font-bold leading-relaxed mb-8 flex-grow whitespace-pre-line">{pkg.country}</p>
 
-                <Link to={getBtnLink(pkg.btnLinkKey, '#')} className="w-full mt-auto">
+                <Link to={getBtnLink(pkg.btnLinkKey, '#')} target="_blank" rel="noopener noreferrer" className="w-full mt-auto">
                   <Button variant="primary" className="w-full py-3 text-sm font-black uppercase tracking-widest truncate shadow-lg hover:shadow-xl transform skew-x-[-10deg]">
                     <span className="block transform skew-x-[10deg]">{getBtnText(pkg.btnTextKey, pkg.defaultBtnText)}</span>
                   </Button>

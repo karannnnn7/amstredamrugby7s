@@ -284,7 +284,7 @@ const HomePage = () => {
               {heroContent.subheading}
             </p>
             <div className="flex flex-col sm:flex-row gap-6">
-              <Link to={getBtnLink('btn_home_tickets_link', '/tickets')}><Button variant="primary" className="text-lg px-12">{getBtnText('btn_home_tickets_text', 'Buy Tickets Now')}</Button></Link>
+              <Link to={getBtnLink('btn_home_tickets_link', '/tickets')} target="_blank" rel="noopener noreferrer"><Button variant="primary" className="text-lg px-12">{getBtnText('btn_home_tickets_text', 'Buy Tickets Now')}</Button></Link>
             </div>
           </div>
         </div>
@@ -489,7 +489,7 @@ const HomePage = () => {
               </div>
             </div>
             <div className="mt-12">
-              <Link to="/visitors"><Button variant="secondary" className="px-10 py-5">Explore the Full Experience</Button></Link>
+              <Link to="/visitors" target="_blank" rel="noopener noreferrer"><Button variant="secondary" className="px-10 py-5">Explore the Full Experience</Button></Link>
             </div>
           </div>
         </div>

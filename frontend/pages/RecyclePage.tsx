@@ -144,7 +144,7 @@ const RecyclePage = () => {
               ))}
             </div>
 
-            <Link to={getBtnLink('btn_recycle_app_link', '#')}>
+            <Link to={getBtnLink('btn_recycle_app_link', '#')} target="_blank" rel="noopener noreferrer">
               <Button variant="secondary" className="px-12 py-5">{getBtnText('btn_recycle_app_text', 'Learn About the App')}</Button>
             </Link>
           </div>

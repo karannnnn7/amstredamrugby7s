@@ -60,7 +60,7 @@ const CharityPage = () => {
                      </div>
                   </div>
 
-                  <Link to={getBtnLink('btn_charity_donate_link', '#')}>
+                  <Link to={getBtnLink('btn_charity_donate_link', '#')} target="_blank" rel="noopener noreferrer">
                      <Button variant="primary">{getBtnText('btn_charity_donate_text', 'Donate to SNSG')}</Button>
                   </Link>
                </div>

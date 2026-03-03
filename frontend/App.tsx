@@ -94,7 +94,7 @@ const Navbar = () => {
               )
             ))}
 
-            <Link to={getBtnLink('btn_nav_tickets_link', '/tickets')} className="bg-rugbyRed hover:bg-red-700 text-white px-6 py-3 font-black uppercase tracking-widest skew-x-[-12deg] transition-all hover:scale-105 active:scale-95">
+            <Link to={getBtnLink('btn_nav_tickets_link', '/tickets')} target="_blank" rel="noopener noreferrer" className="bg-rugbyRed hover:bg-red-700 text-white px-6 py-3 font-black uppercase tracking-widest skew-x-[-12deg] transition-all hover:scale-105 active:scale-95">
               <span className="block skew-x-[12deg]">{getBtnText('btn_nav_tickets_text', 'Buy Tickets')}</span>
             </Link>
           </div>
@@ -138,7 +138,7 @@ const Navbar = () => {
             )
           ))}
 
-          <Link to={getBtnLink('btn_nav_tickets_link', '/tickets')} onClick={() => setIsOpen(false)} className="block w-full text-center bg-rugbyRed p-4 font-black uppercase tracking-widest">
+          <Link to={getBtnLink('btn_nav_tickets_link', '/tickets')} target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)} className="block w-full text-center bg-rugbyRed p-4 font-black uppercase tracking-widest">
             {getBtnText('btn_nav_tickets_text', 'Buy Tickets')}
           </Link>
         </div>

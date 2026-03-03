@@ -36,7 +36,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ title, price, features, recomme
                 ))}
             </ul>
 
-            <Link to={btnLink} className="block w-full">
+            <Link to={btnLink} target="_blank" rel="noopener noreferrer" className="block w-full">
                 <Button variant={recommended ? 'outline' : 'primary'} className="w-full text-lg py-5">
                     {btnText}
                 </Button>

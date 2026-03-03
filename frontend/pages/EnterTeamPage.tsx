@@ -133,7 +133,7 @@ const EnterTeamPage = () => {
                   ))}
                 </div>
                 <div className="mt-12">
-                  <Link to={getBtnLink('btn_enter_reg_link', '/enter-team')}>
+                  <Link to={getBtnLink('btn_enter_reg_link', '/enter-team')} target="_blank" rel="noopener noreferrer">
                     <Button variant="primary" className="w-full md:w-auto">{getBtnText('btn_enter_reg_text', 'Start Registration Now')}</Button>
                   </Link>
                 </div>
