@@ -59,7 +59,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-28">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/assets/logo.webp" alt="Amsterdam Rugby 7s Logo" className="h-28 w-auto object-contain skew-x-[-12deg] " />
+            <img src="/assets/Logo.svg" alt="Amsterdam Rugby 7s Logo" className="h-28 w-auto object-contain skew-x-[-12deg] " />
           </Link>
 
           {/* Desktop Menu */}
@@ -162,7 +162,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1">
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/assets/logo.webp" alt="Amsterdam Rugby 7s Logo" className="h-30 w-auto object-contain skew-x-[-12deg]" />
+              <img src="/assets/Logo.svg" alt="Amsterdam Rugby 7s Logo" className="h-30 w-auto object-contain skew-x-[-12deg]" />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               The premier European rugby 7s festival. Join us in Amsterdam for 3 days of elite rugby and world-class entertainment.
