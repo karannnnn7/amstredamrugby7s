@@ -7,13 +7,53 @@ const SustainabilityPage = () => {
   const [heroContent, setHeroContent] = React.useState({ heading: "Green\nRugby", subheading: "Our commitment to a zero-impact festival by 2030." });
   const [heroImg, setHeroImg] = React.useState('/assets/sustainability.jpg');
 
+  const [introLabel, setIntroLabel] = React.useState({
+    label: "Sustainable Impact",
+    heading: "Playing for the Future",
+    body: "Rugby is a game of community and respect. We extend that respect to our planet. The Amsterdam Rugby 7s is leading the way in sustainable sporting events with innovative waste management and green logistics."
+  });
+
+  const [stats, setStats] = React.useState([
+    { id: 'stat-recycled', heading: "92%", subheading: "Waste Recycled 2024" },
+    { id: 'stat-plastics', heading: "0%", subheading: "Single Use Plastics" }
+  ]);
+
+  const [cards, setCards] = React.useState([
+    { id: 'card-circular', icon: <Recycle />, title: "Circular Economy", desc: "All festival materials are compostable or recyclable." },
+    { id: 'card-power', icon: <Zap />, title: "Renewable Power", desc: "100% of the venue power comes from Dutch wind farms." },
+    { id: 'card-water', icon: <Droplets />, title: "Water Neutral", desc: "Advanced filtration systems reduce water consumption." },
+    { id: 'card-carbon', icon: <Leaf />, title: "Carbon Offset", desc: "We plant 1 tree for every 10 tickets sold." }
+  ]);
+
   React.useEffect(() => {
-    api.get('/content/page/sustainability/hero').then(r => {
+    api.get('/content/page/sustainability').then(r => {
       if (r.data) {
-        setHeroContent({
-          heading: r.data.heading || "Green\nRugby",
-          subheading: r.data.subheading || "Our commitment to a zero-impact festival by 2030."
-        });
+        const hero = r.data.find((c: any) => c.section === 'hero');
+        if (hero) {
+          setHeroContent({
+            heading: hero.heading || "Green\nRugby",
+            subheading: hero.subheading || "Our commitment to a zero-impact festival by 2030."
+          });
+        }
+        
+        const intro = r.data.find((c: any) => c.section === 'intro-label');
+        if (intro) {
+          setIntroLabel({
+            label: intro.subheading || introLabel.label,
+            heading: intro.heading || introLabel.heading,
+            body: intro.body || introLabel.body
+          });
+        }
+        
+        setStats(prev => prev.map(s => {
+          const content = r.data.find((c: any) => c.section === s.id);
+          return content ? { ...s, heading: content.heading || s.heading, subheading: content.subheading || s.subheading } : s;
+        }));
+
+        setCards(prev => prev.map(crd => {
+          const content = r.data.find((c: any) => c.section === crd.id);
+          return content ? { ...crd, title: content.heading || crd.title, desc: content.subheading || crd.desc } : crd;
+        }));
       }
     }).catch(() => { });
 
@@ -45,22 +85,18 @@ const SustainabilityPage = () => {
       <div className="max-w-7xl mx-auto px-4 mt-20">
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
           <div>
-            <span className="text-green-400 font-black uppercase tracking-[0.3em] mb-4 block">Sustainable Impact</span>
-            <h2 className="text-5xl font-black uppercase italic mb-8">Playing for the <span className="text-green-500">Future</span></h2>
+            <span className="text-green-400 font-black uppercase tracking-[0.3em] mb-4 block">{introLabel.label}</span>
+            <h2 className="text-5xl font-black uppercase italic mb-8">{introLabel.heading.split(' ').slice(0, -1).join(' ')} <span className="text-green-500">{introLabel.heading.split(' ').slice(-1).join(' ')}</span></h2>
             <p className="text-lg text-gray-400 font-bold leading-relaxed mb-8">
-              Rugby is a game of community and respect. We extend that respect to our planet.
-              The Amsterdam Rugby 7s is leading the way in sustainable sporting events with
-              innovative waste management and green logistics.
+              {introLabel.body}
             </p>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/5 p-6 border-t-2 border-green-500">
-                <h4 className="text-3xl font-black italic text-green-500">92%</h4>
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400">Waste Recycled 2024</p>
-              </div>
-              <div className="bg-white/5 p-6 border-t-2 border-green-500">
-                <h4 className="text-3xl font-black italic text-green-500">0%</h4>
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400">Single Use Plastics</p>
-              </div>
+              {stats.map(s => (
+                <div key={s.id} className="bg-white/5 p-6 border-t-2 border-green-500">
+                  <h4 className="text-3xl font-black italic text-green-500">{s.heading}</h4>
+                  <p className="text-xs font-black uppercase tracking-widest text-gray-400">{s.subheading}</p>
+                </div>
+              ))}
             </div>
           </div>
           <div className="relative">
@@ -70,12 +106,7 @@ const SustainabilityPage = () => {
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">
-          {[
-            { icon: <Recycle />, title: "Circular Economy", desc: "All festival materials are compostable or recyclable." },
-            { icon: <Zap />, title: "Renewable Power", desc: "100% of the venue power comes from Dutch wind farms." },
-            { icon: <Droplets />, title: "Water Neutral", desc: "Advanced filtration systems reduce water consumption." },
-            { icon: <Leaf />, title: "Carbon Offset", desc: "We plant 1 tree for every 10 tickets sold." }
-          ].map((item, i) => (
+          {cards.map((item, i) => (
             <div key={i} className="bg-white/5 p-8 border border-white/10 hover:border-green-500 transition-colors">
               <div className="text-green-500 mb-6">{item.icon}</div>
               <h3 className="text-xl font-black uppercase italic mb-4">{item.title}</h3>

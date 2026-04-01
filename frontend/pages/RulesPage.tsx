@@ -55,15 +55,38 @@ const defaultRules = [
 const RulesPage = () => {
   const [heroContent, setHeroContent] = React.useState({ heading: "Tournament\nDirectives", subheading: "Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units." });
   const [rules, setRules] = React.useState<any[]>([]);
+  const [pageLabel, setPageLabel] = React.useState("Fair Play & Competition");
+  const [sidebarSpecs, setSidebarSpecs] = React.useState({
+    heading: "Official Specs",
+    items: [
+      "Balls | Gilbert Synergie",
+      "Surface | Hybrid Hybrid Grass",
+      "Medical | Pitchside Advanced Life Support"
+    ]
+  });
 
   React.useEffect(() => {
     // Fetch hero content
-    api.get('/content/page/rules/hero').then(r => {
+    api.get('/content/page/rules').then(r => {
       if (r.data) {
-        setHeroContent({
-          heading: r.data.heading || "Tournament\nDirectives",
-          subheading: r.data.subheading || "Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units."
-        });
+        const hero = r.data.find((c: any) => c.section === 'hero');
+        if (hero) {
+          setHeroContent({
+            heading: hero.heading || "Tournament\nDirectives",
+            subheading: hero.subheading || "Official regulations for the Amsterdam Rugby 7s 2025 event. Adherence is mandatory for all participating units."
+          });
+        }
+        
+        const label = r.data.find((c: any) => c.section === 'page-label');
+        if (label?.heading) setPageLabel(label.heading);
+
+        const specs = r.data.find((c: any) => c.section === 'sidebar-specs');
+        if (specs) {
+          setSidebarSpecs({
+            heading: specs.heading || "Official Specs",
+            items: specs.bodyItems?.length ? specs.bodyItems : sidebarSpecs.items
+          });
+        }
       }
     }).catch(() => { });
 
@@ -79,7 +102,7 @@ const RulesPage = () => {
     <div className="bg-deepNavy min-h-screen pt-32 pb-24">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-16">
-          <span className="text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 block">Fair Play & Competition</span>
+          <span className="text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 block">{pageLabel}</span>
           <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-none tracking-tighter mb-8">
             {heroContent.heading.split('\n').map((line, i, arr) => (
               <React.Fragment key={i}>
@@ -92,7 +115,7 @@ const RulesPage = () => {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2 grid md:grid-cols-2 gap-8">
+          <div className="lg:col-span-2 grid md:grid-cols-2 gap-8 items-start">
             {rules.length > 0 ? (
               rules.map((rule) => (
                 <RuleCard
@@ -136,20 +159,17 @@ const RulesPage = () => {
 
             <div className="bg-electricBlue text-white p-8 skew-x-[-4deg]">
               <div className="skew-x-[4deg]">
-                <h3 className="text-2xl font-black italic uppercase mb-4">Official Specs</h3>
+                <h3 className="text-2xl font-black italic uppercase mb-4">{sidebarSpecs.heading}</h3>
                 <div className="space-y-4 text-xs font-black uppercase tracking-widest opacity-80">
-                  <div className="flex justify-between">
-                    <span>Balls</span>
-                    <span>Gilbert Synergie</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Surface</span>
-                    <span>Hybrid Hybrid Grass</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Medical</span>
-                    <span>Pitchside Advanced Life Support</span>
-                  </div>
+                  {sidebarSpecs.items.map((item, i) => {
+                    const [key, val] = item.split('|').map(s => s.trim());
+                    return (
+                      <div key={i} className="flex justify-between">
+                        <span>{key}</span>
+                        <span>{val}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

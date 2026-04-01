@@ -52,8 +52,23 @@ const DefaultPackages: TeamPackage[] = [
 const TeamsPage = () => {
   const { getBtnText, getBtnLink } = useConfig();
   const [packages, setPackages] = useState<TeamPackage[]>([]);
+  const [heroContent, setHeroContent] = useState({ heading: "Registered\nSquads", subheading: "Meet the warriors competing in this year's tournament." });
 
   useEffect(() => {
+    // Fetch Dynamic Hero Content
+    api.get('/content/page/teams').then(r => {
+      if (r.data) {
+        const hero = r.data.find((c: any) => c.section === 'hero');
+        if (hero) {
+          setHeroContent({
+            heading: hero.heading || "Registered\nSquads",
+            subheading: hero.subheading || "Meet the warriors competing in this year's tournament."
+          });
+        }
+      }
+    }).catch(() => { });
+
+    // Fetch Teams Packages
     api.get('/teams').then(r => {
       if (r.data && r.data.length > 0) {
         const mappedPackages = r.data.map((t: any) => {
@@ -96,9 +111,18 @@ const TeamsPage = () => {
       <section className="bg-white text-deepNavy pt-32 pb-16 px-4 skew-divider mb-20">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-[0.8] tracking-tighter mb-4">
-            Registered <br /> <span className="text-rugbyRed">Squads</span>
+            {heroContent.heading.includes('\n') ? (
+              heroContent.heading.split('\n').map((line, i, arr) => (
+                <React.Fragment key={i}>
+                  {i === arr.length - 1 ? <span className="text-rugbyRed">{line}</span> : line}
+                  {i < arr.length - 1 && <br />}
+                </React.Fragment>
+              ))
+            ) : (
+              <>{heroContent.heading.split(' ').slice(0, -1).join(' ')} <span className="text-rugbyRed">{heroContent.heading.split(' ').slice(-1).join(' ')}</span></>
+            )}
           </h1>
-          <p className="text-lg font-bold text-gray-500 max-w-xl">Meet the warriors competing in this year's tournament.</p>
+          <p className="text-lg font-bold text-gray-500 max-w-xl">{heroContent.subheading}</p>
         </div>
       </section>
 

@@ -33,6 +33,20 @@ const TicketsPage = () => {
   const [groupDesc, setGroupDesc] = useState("Bringing a squad of 10 or more? Unlock massive savings for your rugby club, corporate group, or large social circle.");
   const [groupImg, setGroupImg] = useState("https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1200");
 
+  const [whatsIncluded, setWhatsIncluded] = useState({ heading: "What's Included?", subheading: "Every ticket unlocks the full tournament spirit." });
+  const [features, setFeatures] = useState([
+    { id: 'feature-rugby', icon: <Users />, title: "Elite Rugby", text: "Witness 120+ teams from 4 continents." },
+    { id: 'feature-stage', icon: <Music />, title: "Multi-Stage", text: "Full music festival setup across 3 stages." },
+    { id: 'feature-food', icon: <Utensils />, title: "Gastro Yard", text: "Street food market with global flavors." },
+    { id: 'feature-finals', icon: <Star />, title: "Showstoppers", text: "Grand Finals show and trophy ceremony." },
+  ]);
+
+  const [groupItems, setGroupItems] = useState([
+    { id: 'group-club-pass', icon: <ShieldCheck />, title: "Club Bulk Pass", desc: "15% discount for verified amateur clubs." },
+    { id: 'group-early-bird', icon: <Clock />, title: "Early Bird Extension", desc: "Locked-in pricing for large group bookings." },
+    { id: 'group-reserved', icon: <MapPin />, title: "Reserved Area", desc: "Private group zones available upon request." }
+  ]);
+
   useEffect(() => {
     // Hero content
     api.get('/content/page/tickets/hero').then(r => {
@@ -61,16 +75,30 @@ const TicketsPage = () => {
     }).catch(() => { });
 
     // Group discount section
-    api.get('/content/page/tickets/group-discount').then(r => {
+    api.get('/content/page/tickets').then(r => {
       if (r.data) {
-        const c = r.data;
-        if (c.heading) setGroupHeading(c.heading);
-        if (c.body) setGroupDesc(c.body);
+        const groupDiscount = r.data.find((c: any) => c.section === 'group-discount');
+        if (groupDiscount) {
+          if (groupDiscount.heading) setGroupHeading(groupDiscount.heading);
+          if (groupDiscount.body) setGroupDesc(groupDiscount.body);
+        }
+
+        const whatsInc = r.data.find((c: any) => c.section === 'whats-included');
+        if (whatsInc) {
+          setWhatsIncluded({ heading: whatsInc.heading || "What's Included?", subheading: whatsInc.subheading || "Every ticket unlocks the full tournament spirit." });
+        }
+
+        setFeatures(prev => prev.map(f => {
+          const content = r.data.find((c: any) => c.section === f.id);
+          return content ? { ...f, title: content.heading || f.title, text: content.subheading || f.text } : f;
+        }));
+
+        setGroupItems(prev => prev.map(g => {
+          const content = r.data.find((c: any) => c.section === g.id);
+          return content ? { ...g, title: content.heading || g.title, desc: content.subheading || g.desc } : g;
+        }));
       }
-    }).catch(() => {
-      setGroupHeading('');
-      setGroupDesc('');
-    });
+    }).catch(() => { });
 
     api.get('/config/tickets_group_image').then(r => {
       if (r.data?.value) setGroupImg(r.data.value);
@@ -123,18 +151,13 @@ const TicketsPage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-24">
             <h2 className="text-5xl md:text-7xl font-black italic uppercase italic tracking-tighter leading-none mb-6">
-              What's <span className="text-rugbyRed">Included?</span>
+              {whatsIncluded.heading.split(' ').slice(0, -1).join(' ')} <span className="text-rugbyRed">{whatsIncluded.heading.split(' ').slice(-1).join(' ')}</span>
             </h2>
-            <p className="text-xl font-bold text-gray-500 uppercase">Every ticket unlocks the full tournament spirit.</p>
+            <p className="text-xl font-bold text-gray-500 uppercase">{whatsIncluded.subheading}</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-12">
-            {[
-              { icon: <Users />, title: "Elite Rugby", text: "Witness 120+ teams from 4 continents." },
-              { icon: <Music />, title: "Multi-Stage", text: "Full music festival setup across 3 stages." },
-              { icon: <Utensils />, title: "Gastro Yard", text: "Street food market with global flavors." },
-              { icon: <Star />, title: "Showstoppers", text: "Grand Finals show and trophy ceremony." },
-            ].map((item, i) => (
+            {features.map((item, i) => (
               <div key={i} className="text-center group">
                 <div className="w-24 h-24 bg-rugbyRed/5 border-2 border-rugbyRed/10 rounded-full flex items-center justify-center mx-auto mb-8 text-rugbyRed group-hover:bg-rugbyRed group-hover:text-white transition-all duration-300">
                   {React.cloneElement(item.icon as React.ReactElement, { size: 40 })}
@@ -155,11 +178,7 @@ const TicketsPage = () => {
             <p className="text-xl text-gray-400 font-bold mb-12 leading-relaxed italic">{groupDesc}</p>
 
             <div className="space-y-8">
-              {[
-                { icon: <ShieldCheck />, title: "Club Bulk Pass", desc: "15% discount for verified amateur clubs." },
-                { icon: <Clock />, title: "Early Bird Extension", desc: "Locked-in pricing for large group bookings." },
-                { icon: <MapPin />, title: "Reserved Area", desc: "Private group zones available upon request." }
-              ].map((item, i) => (
+              {groupItems.map((item, i) => (
                 <div key={i} className="flex items-start space-x-6 bg-white/5 p-8 border-l-4 border-rugbyRed">
                   <div className="text-rugbyRed">{React.cloneElement(item.icon as React.ReactElement, { size: 32 })}</div>
                   <div>

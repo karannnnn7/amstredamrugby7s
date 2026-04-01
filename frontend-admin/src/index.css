@@ -1,6 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    background-color: theme('colors.gray.950');
+    color: theme('colors.white');
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-gray-900/60 backdrop-blur-md border border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-gray-800/60 backdrop-blur-md border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+
+  .glow-border {
+    @apply relative before:absolute before:inset-0 before:-z-10 before:-m-[1px] before:rounded-[inherit] before:bg-gradient-to-r before:from-rugbyRed before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity;
+  }
+}
 
 /* Custom Utilities */
 .skew-card {
@@ -9,4 +33,23 @@
 
 .skew-card-inner {
   transform: skewX(12deg);
+}
+
+/* Custom scrollbar for better appearance */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: theme('colors.gray.900');
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.gray.700');
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.gray.500');
 }

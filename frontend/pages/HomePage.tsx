@@ -183,6 +183,12 @@ const HomePage = () => {
   const [eventDate, setEventDate] = useState("MAY 16-18");
   const [eventName, setEventName] = useState("Amsterdam Rugby 7s 2025");
   const [eventLocation, setEventLocation] = useState("Olympic Stadium Precinct, NL");
+  
+  const [countdownLabel, setCountdownLabel] = useState("Countdown to Kickoff");
+  const [sponsorsSection, setSponsorsSection] = useState({ label: "Powering the Game", heading: "Official Sponsors" });
+  const [newsSection, setNewsSection] = useState({ label: "Official Feed", heading: "Broadcast News" });
+  const [socialSection, setSocialSection] = useState({ label: "Share your journey with the world", heading: "#AMSTERDAM7S" });
+  const [festivalHeader, setFestivalHeader] = useState({ label: "More than just a game", heading: "The Rugby Festival" });
 
   useEffect(() => {
     setIsLoading(true);
@@ -244,7 +250,7 @@ const HomePage = () => {
         if (r.data?.length >= 2) setFestivalImg2(r.data[1].img);
       }),
 
-      // Festival Content
+      // Festival Content & new dynamic text
       api.get('/content/page/home').then(r => {
         if (r.data) {
           // Description
@@ -256,6 +262,21 @@ const HomePage = () => {
             const content = r.data.find((c: any) => c.section === f.id);
             return content ? { ...f, title: content.heading || f.title, text: content.subheading || f.text } : f;
           }));
+          
+          const countdown = r.data.find((c: any) => c.section === 'countdown-label');
+          if (countdown?.heading) setCountdownLabel(countdown.heading);
+
+          const sponsors = r.data.find((c: any) => c.section === 'sponsors-section');
+          if (sponsors) setSponsorsSection({ label: sponsors.subheading || "Powering the Game", heading: sponsors.heading || "Official Sponsors" });
+
+          const newsText = r.data.find((c: any) => c.section === 'news-section');
+          if (newsText) setNewsSection({ label: newsText.subheading || "Official Feed", heading: newsText.heading || "Broadcast News" });
+
+          const social = r.data.find((c: any) => c.section === 'social-section');
+          if (social) setSocialSection({ label: social.subheading || "Share your journey with the world", heading: social.heading || "#AMSTERDAM7S" });
+
+          const festHead = r.data.find((c: any) => c.section === 'festival-header');
+          if (festHead) setFestivalHeader({ label: festHead.subheading || "More than just a game", heading: festHead.heading || "The Rugby Festival" });
         }
       })
     ]).finally(() => setIsLoading(false));
@@ -267,42 +288,45 @@ const HomePage = () => {
   return (
     <div className="bg-deepNavy overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden bg-black">
+      <section className="relative min-h-screen flex flex-col overflow-hidden bg-black pb-8 md:pb-12">
         <HeroCarousel />
 
-        {/* Main Hero Content */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 w-full flex-grow flex flex-col justify-center pt-32 pb-20">
-          <div className="max-w-4xl drop-shadow-2xl">
-            <div className="flex items-center space-x-2 text-xl sm:text-2xl text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 animate-pulse">
-              <Zap size={24} fill="currentColor" />
-              <span>{eventName}</span>
-            </div>
-            <h1 className="text-[5rem] sm:text-[8rem] md:text-[11rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8 transform -rotate-2">
-              {heroContent.heading.map((line: string, i: number) => {
-                const isLast = i === heroContent.heading.length - 1;
-                if (isLoading) return <Loader />;
+        {/* Hero Container */}
+        <div className="relative z-20 w-full flex-grow flex flex-col pt-40 pb-16 min-h-[100vh]">
+          {/* Main Hero Content */}
+          <div className="max-w-7xl mx-auto px-4 w-full flex-grow flex flex-col justify-center">
+            <div className="max-w-4xl drop-shadow-2xl">
+              <div className="flex items-center space-x-2 text-xl sm:text-2xl text-rugbyRed font-black uppercase tracking-[0.3em] mb-4 animate-pulse">
+                <Zap size={24} fill="currentColor" />
+                <span>{eventName}</span>
+              </div>
+              <h1 className="text-[5rem] sm:text-[8rem] md:text-[11rem] font-black italic uppercase leading-[0.8] tracking-tighter mb-8 transform -rotate-2">
+                {heroContent.heading.map((line: string, i: number) => {
+                  const isLast = i === heroContent.heading.length - 1;
+                  if (isLoading) return <Loader />;
 
-                return (
-                  <React.Fragment key={i}>
-                    {isLast ? <span className="text-rugbyRed">{line}</span> : line}
-                    {!isLast && <br />}
-                  </React.Fragment>
-                );
-              })}
-            </h1>
-            <p className="text-xl sm:text-2xl font-bold text-gray-100 max-w-2xl mb-12 leading-tight">
-              {heroContent.subheading}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <Link to={getBtnLink('btn_home_tickets_link', '/tickets')} target="_blank" rel="noopener noreferrer"><Button variant="primary" className="text-lg px-12">{getBtnText('btn_home_tickets_text', 'Buy Tickets Now')}</Button></Link>
+                  return (
+                    <React.Fragment key={i}>
+                      {isLast ? <span className="text-rugbyRed">{line}</span> : line}
+                      {!isLast && <br />}
+                    </React.Fragment>
+                  );
+                })}
+              </h1>
+              <p className="text-xl sm:text-2xl font-bold text-gray-100 max-w-2xl mb-12 leading-tight">
+                {heroContent.subheading}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6">
+                <Link to={getBtnLink('btn_home_tickets_link', '/tickets')} target="_blank" rel="noopener noreferrer"><Button variant="primary" className="text-lg px-12">{getBtnText('btn_home_tickets_text', 'Buy Tickets Now')}</Button></Link>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="relative z-20 w-full pb-10">
+          {/* Footer / Countdown */}
+          <div className="w-full mt-8 md:mt-0">
           <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-end gap-8">
             <div className="order-2 md:order-1">
-              <p className="font-black uppercase text-[10px] md:text-xs tracking-widest text-white/60 mb-3 drop-shadow-md">Countdown to Kickoff</p>
+              <p className="font-black uppercase text-[10px] md:text-xs tracking-widest text-white/60 mb-3 drop-shadow-md">{countdownLabel}</p>
               <Countdown targetDateStr={eventDate} />
             </div>
             <div className="flex items-center space-x-6 order-1 md:order-2 drop-shadow-lg">
@@ -317,6 +341,7 @@ const HomePage = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -343,9 +368,9 @@ const HomePage = () => {
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
-            <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">Powering the Game</span>
+            <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">{sponsorsSection.label}</span>
             <h2 className="text-5xl md:text-8xl font-black italic uppercase italic tracking-tighter leading-[0.8] mb-8">
-              Official <span className="text-white/40">Sponsors</span>
+              {sponsorsSection.heading.split(' ')[0]} <span className="text-white/40">{sponsorsSection.heading.split(' ').slice(1).join(' ')}</span>
             </h2>
           </div>
 
@@ -415,9 +440,9 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
             <div className="max-w-2xl">
-              <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">Official Feed</span>
+              <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">{newsSection.label}</span>
               <h2 className="text-5xl md:text-8xl font-black italic uppercase italic tracking-tighter leading-[0.8]">
-                Broadcast <span className="text-white/20">News</span>
+                {newsSection.heading.split(' ')[0]} <span className="text-white/20">{newsSection.heading.split(' ').slice(1).join(' ')}</span>
               </h2>
             </div>
             <Link to="/contact" className="flex items-center space-x-2 text-rugbyRed font-black uppercase tracking-widest group">
@@ -449,8 +474,8 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-20">
             <Instagram size={48} className="mx-auto text-rugbyRed mb-6" />
-            <h2 className="text-4xl md:text-6xl font-black italic uppercase mb-4">#AMSTERDAM7S</h2>
-            <p className="text-gray-500 font-bold uppercase tracking-widest">Share your journey with the world</p>
+            <h2 className="text-4xl md:text-6xl font-black italic uppercase mb-4">{socialSection.heading}</h2>
+            <p className="text-gray-500 font-bold uppercase tracking-widest">{socialSection.label}</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
             {socialImages.map((src, i) => (
@@ -480,9 +505,9 @@ const HomePage = () => {
             </div>
           </div>
           <div className="lg:w-1/2 order-1 lg:order-2">
-            <span className="text-electricBlue font-black uppercase tracking-[0.3em] mb-4 block">More than just a game</span>
+            <span className="text-electricBlue font-black uppercase tracking-[0.3em] mb-4 block">{festivalHeader.label}</span>
             <h2 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-none mb-10">
-              The Rugby <span className="text-rugbyRed italic">Festival</span>
+              {festivalHeader.heading.split(' ').slice(0, -1).join(' ')} <span className="text-rugbyRed italic">{festivalHeader.heading.split(' ').slice(-1).join(' ')}</span>
             </h2>
             <div className="space-y-8 text-xl text-gray-300 leading-relaxed font-bold">
               <p>{festivalDesc}</p>

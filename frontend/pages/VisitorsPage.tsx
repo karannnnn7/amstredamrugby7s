@@ -8,18 +8,40 @@ import InfoSection from '../components/InfoSection';
 const VisitorsPage = () => {
   const [mapsLink, setMapsLink] = useState('');
   const [heroContent, setHeroContent] = useState({ heading: "Visit the\nFest", subheading: "Everything you need to know for May 16-18." });
+  const [contentSections, setContentSections] = useState<any[]>([]);
+
+  const [gettingHereSection, setGettingHereSection] = useState({ heading: "Getting Here", subheading: "Amsterdam is one of the world's most accessible cities. We encourage green travel methods!" });
+  const [transportItems, setTransportItems] = useState([
+    { id: 'transport-public', icon: <Train />, title: "Public Transport", desc: "Tram 13 or Bus 21 from Central Station" },
+    { id: 'transport-cycling', icon: <Bike />, title: "Cycling", desc: "Large guarded bike parking available" },
+    { id: 'transport-parking', icon: <ParkingCircle />, title: "Car Parking", desc: "Pre-book parking pass for Sloterdijk P+R" }
+  ]);
 
   useEffect(() => {
     api.get('/config/google_maps_link').then(r => {
       if (r.data?.value) setMapsLink(r.data.value);
     }).catch(() => { });
 
-    api.get('/content/page/visitors/hero').then(r => {
-      if (r.data) {
-        setHeroContent({
-          heading: r.data.heading || "Visit the\nFest",
-          subheading: r.data.subheading || "Everything you need to know for May 16-18."
-        });
+    api.get('/content/page/visitors').then(r => {
+      if (r.data && Array.isArray(r.data)) {
+        setContentSections(r.data);
+        const hero = r.data.find(s => s.section === 'hero');
+        if (hero) {
+          setHeroContent({
+            heading: hero.heading || "Visit the\nFest",
+            subheading: hero.subheading || "Everything you need to know for May 16-18."
+          });
+        }
+        
+        const gettingHere = r.data.find(s => s.section === 'getting-here');
+        if (gettingHere) {
+          setGettingHereSection({ heading: gettingHere.heading || "Getting Here", subheading: gettingHere.subheading || "Amsterdam is one of the world's most accessible cities. We encourage green travel methods!" });
+        }
+
+        setTransportItems(prev => prev.map(t => {
+          const content = r.data.find((c: any) => c.section === t.id);
+          return content ? { ...t, title: content.heading || t.title, desc: content.subheading || t.desc } : t;
+        }));
       }
     }).catch(() => { });
   }, []);
@@ -44,69 +66,66 @@ const VisitorsPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 pb-24">
         <div className="grid md:grid-cols-3 gap-8">
-          <InfoSection
-            icon={<MapPin size={40} />}
-            title="The Venue"
-            items={[
-              "National Rugby Center, Amsterdam",
-              "Address: Bok de Korverweg 6, 1067 HR",
-              "Open from 09:00 AM daily",
-              "Cashless venue (Card only)",
-              "Multi-pitch facility (6 fields)"
-            ]}
-          />
-          <InfoSection
-            icon={<Utensils size={40} />}
-            title="Food & Drink"
-            items={[
-              "European Street Food Market",
-              "Heineken Beer Gardens",
-              "Artisanal Coffee & Juices",
-              "Vegan & Gluten-free options",
-              "Hydration stations across venue"
-            ]}
-          />
-          <InfoSection
-            icon={<Music size={40} />}
-            title="Entertainment"
-            items={[
-              "Main Stage: Top EU DJs",
-              "Fan Village: Games & Merch",
-              "Player Meet & Greets",
-              "Elite Final Showdown (Sun)",
-              "Massive After-party Nightly"
-            ]}
-          />
+          {(() => {
+             const venue = contentSections.find(s => s.section === 'info-venue');
+             const food = contentSections.find(s => s.section === 'info-food');
+             const ent = contentSections.find(s => s.section === 'info-entertainment');
+             return (
+               <>
+                 <InfoSection
+                   icon={<MapPin size={40} />}
+                   title={venue?.heading || "The Venue"}
+                   items={venue?.bodyItems?.length ? venue.bodyItems : [
+                     "National Rugby Center, Amsterdam",
+                     "Address: Bok de Korverweg 6, 1067 HR",
+                     "Open from 09:00 AM daily",
+                     "Cashless venue (Card only)",
+                     "Multi-pitch facility (6 fields)"
+                   ]}
+                 />
+                 <InfoSection
+                   icon={<Utensils size={40} />}
+                   title={food?.heading || "Food & Drink"}
+                   items={food?.bodyItems?.length ? food.bodyItems : [
+                     "European Street Food Market",
+                     "Heineken Beer Gardens",
+                     "Artisanal Coffee & Juices",
+                     "Vegan & Gluten-free options",
+                     "Hydration stations across venue"
+                   ]}
+                 />
+                 <InfoSection
+                   icon={<Music size={40} />}
+                   title={ent?.heading || "Entertainment"}
+                   items={ent?.bodyItems?.length ? ent.bodyItems : [
+                     "Main Stage: Top EU DJs",
+                     "Fan Village: Games & Merch",
+                     "Player Meet & Greets",
+                     "Elite Final Showdown (Sun)",
+                     "Massive After-party Nightly"
+                   ]}
+                 />
+               </>
+             )
+          })()}
         </div>
 
         <section className="mt-20 bg-white text-deepNavy p-12 skew-x-[-2deg]">
           <div className="skew-x-[2deg] flex flex-col md:row items-center gap-12">
             <div className="md:w-1/2">
-              <h2 className="text-4xl font-black italic uppercase mb-6 leading-tight">Getting <span className="text-rugbyRed">Here</span></h2>
-              <p className="text-lg font-bold text-gray-600 mb-8">Amsterdam is one of the world's most accessible cities. We encourage green travel methods!</p>
+              <h2 className="text-4xl font-black italic uppercase mb-6 leading-tight">{gettingHereSection.heading.split(' ')[0]} <span className="text-rugbyRed">{gettingHereSection.heading.split(' ').slice(1).join(' ')}</span></h2>
+              <p className="text-lg font-bold text-gray-600 mb-8">{gettingHereSection.subheading}</p>
 
               <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-deepNavy p-3 text-white"><Train /></div>
-                  <div>
-                    <h4 className="font-black uppercase text-sm">Public Transport</h4>
-                    <p className="text-xs font-bold text-gray-400">Tram 13 or Bus 21 from Central Station</p>
+                {transportItems.map((item, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <div className="bg-deepNavy p-3 text-white">{item.icon}</div>
+                    <div>
+                      <h4 className="font-black uppercase text-sm">{item.title}</h4>
+                      <p className="text-xs font-bold text-gray-400">{item.desc}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="bg-deepNavy p-3 text-white"><Bike /></div>
-                  <div>
-                    <h4 className="font-black uppercase text-sm">Cycling</h4>
-                    <p className="text-xs font-bold text-gray-400">Large guarded bike parking available</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="bg-deepNavy p-3 text-white"><ParkingCircle /></div>
-                  <div>
-                    <h4 className="font-black uppercase text-sm">Car Parking</h4>
-                    <p className="text-xs font-bold text-gray-400">Pre-book parking pass for Sloterdijk P+R</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
             <div className="md:w-1/2 w-full h-[400px] bg-gray-200 rounded-sm overflow-hidden relative border-8 border-deepNavy flex items-center justify-center">

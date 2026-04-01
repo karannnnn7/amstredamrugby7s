@@ -24,13 +24,55 @@ const RecyclePage = () => {
   const [heroContent, setHeroContent] = React.useState({ heading: "The\nSystem", subheading: "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030." });
   const [heroImg, setHeroImg] = React.useState('/assets/recycle.jpg');
 
+  const [cycleHeader, setCycleHeader] = React.useState({ label: "Engineered Sustainability", heading: "Pitch to Plant" });
+  const [steps, setSteps] = React.useState([
+    { id: 'step-01', num: "01", icon: <Trash2 size={40} />, title: "Smart Sorting", desc: "AI-powered sorting bins across the venue automatically segregate organics, plastics, and metals." },
+    { id: 'step-02', num: "02", icon: <Recycle size={40} />, title: "On-Site Bio", desc: "Organic waste is processed into fertilizer for the local Amsterdam parks via our mobile digesters." },
+    { id: 'step-03', num: "03", icon: <Leaf size={40} />, title: "Green Logistics", desc: "Recyclables are transported via zero-emission electric barges through the Amsterdam canals." },
+    { id: 'step-04', num: "04", icon: <RefreshCw size={40} />, title: "Re-Entry", desc: "Plastics are repurposed into tournament seating and equipment for next year's event." }
+  ]);
+
+  const [rewardsHeader, setRewardsHeader] = React.useState({ label: "Play Your Part", heading: "Recycle \nGet Rewarded.", body: "Our \"Green Token\" system turns fan action into festival perks. Every cup returned is a step closer to a free round or exclusive merch." });
+  const [rewards, setRewards] = React.useState([
+    { id: 'reward-01', icon: <Beer />, title: "Statiegeld System", desc: "Return your reusable cup and get €1.50 back instantly or donate it to SNSG." },
+    { id: 'reward-02', icon: <Award />, title: "Clean Squad Rewards", desc: "Fans seen actively cleaning their area get VIP stage access upgrades." },
+    { id: 'reward-03', icon: <Zap />, title: "Token Boost", desc: "Scan your bin-deposit to earn digital tokens for the official app store." }
+  ]);
+
+  const [crewSection, setCrewSection] = React.useState({
+    heading: "The Innovation Crew",
+    items: ['RECYCLING HUB', 'GREEN POWER', 'ECO BARGE', 'CLEAN CITY']
+  });
+
   React.useEffect(() => {
-    api.get('/content/page/recycle/hero').then(r => {
+    api.get('/content/page/recycle').then(r => {
       if (r.data) {
-        setHeroContent({
-          heading: r.data.heading || "The\nSystem",
-          subheading: r.data.subheading || "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030."
-        });
+        const hero = r.data.find((c: any) => c.section === 'hero');
+        if (hero) {
+          setHeroContent({
+            heading: hero.heading || "The\nSystem",
+            subheading: hero.subheading || "Redefining \"Full-Time\" — where the game ends, the cycle begins. 100% Waste Diversion by 2030."
+          });
+        }
+        
+        const cycleHead = r.data.find((c: any) => c.section === 'cycle-header');
+        if (cycleHead) setCycleHeader({ label: cycleHead.subheading || cycleHeader.label, heading: cycleHead.heading || cycleHeader.heading });
+        
+        setSteps(prev => prev.map(s => {
+          const content = r.data.find((c: any) => c.section === s.id);
+          return content ? { ...s, title: content.heading || s.title, desc: content.subheading || s.desc } : s;
+        }));
+
+        const rwHead = r.data.find((c: any) => c.section === 'rewards-header');
+        if (rwHead) setRewardsHeader({ label: rwHead.subheading || rewardsHeader.label, heading: rwHead.heading || rewardsHeader.heading, body: rwHead.body || rewardsHeader.body });
+
+        setRewards(prev => prev.map(rw => {
+          const content = r.data.find((c: any) => c.section === rw.id);
+          return content ? { ...rw, title: content.heading || rw.title, desc: content.subheading || rw.desc } : rw;
+        }));
+
+        const crew = r.data.find((c: any) => c.section === 'crew-section');
+        if (crew) setCrewSection({ heading: crew.heading || crewSection.heading, items: crew.bodyItems?.length ? crew.bodyItems : crewSection.items });
       }
     }).catch(() => { });
 
@@ -78,38 +120,23 @@ const RecyclePage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
             <div className="max-w-2xl">
-              <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">Engineered Sustainability</span>
+              <span className="text-rugbyRed font-black uppercase tracking-[0.4em] mb-4 block">{cycleHeader.label}</span>
               <h2 className="text-6xl md:text-8xl font-black italic uppercase italic tracking-tighter leading-[0.8]">
-                Pitch to <span className="text-rugbyRed">Plant</span>
+                {cycleHeader.heading.split(' ').slice(0, -1).join(' ')} <span className="text-rugbyRed">{cycleHeader.heading.split(' ').slice(-1).join(' ')}</span>
               </h2>
             </div>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            <Step
-              num="01"
-              icon={<Trash2 size={40} />}
-              title="Smart Sorting"
-              desc="AI-powered sorting bins across the venue automatically segregate organics, plastics, and metals."
-            />
-            <Step
-              num="02"
-              icon={<Recycle size={40} />}
-              title="On-Site Bio"
-              desc="Organic waste is processed into fertilizer for the local Amsterdam parks via our mobile digesters."
-            />
-            <Step
-              num="03"
-              icon={<Leaf size={40} />}
-              title="Green Logistics"
-              desc="Recyclables are transported via zero-emission electric barges through the Amsterdam canals."
-            />
-            <Step
-              num="04"
-              icon={<RefreshCw size={40} />}
-              title="Re-Entry"
-              desc="Plastics are repurposed into tournament seating and equipment for next year's event."
-            />
+            {steps.map(s => (
+              <Step
+                key={s.id}
+                num={s.num}
+                icon={s.icon}
+                title={s.title}
+                desc={s.desc}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -120,20 +147,25 @@ const RecyclePage = () => {
 
         <div className="max-w-7xl mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-24 items-center">
           <div>
-            <span className="text-electricBlue font-black uppercase tracking-[0.3em] mb-4 block">Play Your Part</span>
+            <span className="text-electricBlue font-black uppercase tracking-[0.3em] mb-4 block">{rewardsHeader.label}</span>
             <h2 className="text-5xl md:text-7xl font-black italic uppercase leading-[0.9] mb-10">
-              Recycle <br /><span className="text-white">Get Rewarded.</span>
+              {rewardsHeader.heading.includes('\n') ? (
+                rewardsHeader.heading.split('\n').map((line, i, arr) => (
+                  <React.Fragment key={i}>
+                    {i === arr.length - 1 ? <span className="text-white">{line}</span> : line}
+                    {i < arr.length - 1 && <br />}
+                  </React.Fragment>
+                ))
+              ) : (
+                <>{rewardsHeader.heading.split(' ').slice(0, -1).join(' ')} <span className="text-white">{rewardsHeader.heading.split(' ').slice(-1).join(' ')}</span></>
+              )}
             </h2>
             <p className="text-xl text-gray-400 font-bold mb-12 leading-relaxed italic">
-              Our "Green Token" system turns fan action into festival perks. Every cup returned is a step closer to a free round or exclusive merch.
+              {rewardsHeader.body}
             </p>
 
             <div className="space-y-6 mb-12">
-              {[
-                { icon: <Beer />, title: "Statiegeld System", desc: "Return your reusable cup and get €1.50 back instantly or donate it to SNSG." },
-                { icon: <Award />, title: "Clean Squad Rewards", desc: "Fans seen actively cleaning their area get VIP stage access upgrades." },
-                { icon: <Zap />, title: "Token Boost", desc: "Scan your bin-deposit to earn digital tokens for the official app store." }
-              ].map((item, i) => (
+              {rewards.map((item, i) => (
                 <div key={i} className="flex items-start space-x-6 bg-white/5 p-8 border-l-4 border-electricBlue hover:bg-white/10 transition-all">
                   <div className="text-electricBlue">{item.icon}</div>
                   <div>
@@ -169,9 +201,9 @@ const RecyclePage = () => {
       {/* Technical Partners */}
       <section className="py-32 bg-black">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-black italic uppercase mb-16">The Innovation Crew</h2>
+          <h2 className="text-4xl font-black italic uppercase mb-16">{crewSection.heading}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {['RECYCLING HUB', 'GREEN POWER', 'ECO BARGE', 'CLEAN CITY'].map((partner, i) => (
+            {crewSection.items.map((partner, i) => (
               <div key={i} className="border border-white/10 p-12 hover:bg-white/5 transition-colors group cursor-default">
                 <span className="text-xl font-black italic text-white/40 group-hover:text-rugbyRed transition-colors">{partner}</span>
               </div>
